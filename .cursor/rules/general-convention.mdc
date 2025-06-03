@@ -1,0 +1,94 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# General Code Style & Formatting
+- Use English for all code and documentation.
+- Always declare the type of each variable and function (parameters and return value).
+- Avoid using any.
+- Create necessary types.
+- Use JSDoc to document public classes and methods.
+- Don't leave blank lines within a function.
+
+# Naming Conventions
+- Use PascalCase for classes.
+- Use camelCase for variables, functions, and methods.
+- Use kebab-case for file and directory names.
+- Use UPPERCASE for environment variables.
+- Avoid magic numbers and define constants.
+
+# Functions & Logic
+- Keep functions short and single-purpose (<20 lines).
+- Avoid deeply nested blocks by:
+  - Using early returns.
+  - Extracting logic into utility functions.
+- Use higher-order functions (map, filter, reduce) to simplify logic.
+- Use arrow functions for simple cases (<3 instructions), named functions otherwise.
+- Use default parameter values instead of null/undefined checks.
+- Use RO-RO (Receive Object, Return Object) for passing and returning multiple parameters.
+
+# Data Handling
+- Avoid excessive use of primitive types; encapsulate data in composite types.
+- Avoid placing validation inside functions—use classes with internal validation instead.
+- Prefer immutability for data:
+  - Use readonly for immutable properties.
+  - Use as const for literals that never change.
+
+# Telegraf Bot Best Practices
+- **Bot Structure**: Organize bot handlers in separate files by functionality (commands, scenes, middleware).
+- **Context Typing**: Always type the Telegraf context with custom properties:
+  ```typescript
+  interface BotContext extends Context {
+    user?: User;
+    db: PrismaClient;
+  }
+  ```
+- **Error Handling**: Always wrap bot handlers in try-catch blocks and provide user-friendly error messages.
+- **Middleware**: Use middleware for common operations like user authentication, logging, and database setup.
+- **Session Management**: Use Telegraf sessions for multi-step conversations and state management.
+- **Command Organization**: 
+  - Use command files with clear naming: `start-command.ts`, `help-command.ts`
+  - Export command handlers as named functions
+  - Use `bot.command()` for simple commands, `Scenes` for complex flows
+- **Rate Limiting**: Implement rate limiting for user actions to prevent spam.
+- **Input Validation**: Always validate and sanitize user input before processing.
+- **Response Patterns**: Use consistent response patterns with proper Telegram formatting (Markdown/HTML).
+
+# Prisma ORM Best Practices
+- **Client Management**: 
+  - Use a single PrismaClient instance across the application
+  - Initialize client in a separate file: `src/utils/db.ts`
+  - Always handle connection errors gracefully
+- **Query Optimization**:
+  - Use `select` to fetch only needed fields
+  - Use `include` sparingly and prefer explicit relations
+  - Implement pagination for large datasets using `take` and `skip`
+- **Transactions**: Use `$transaction()` for operations that must be atomic.
+- **Error Handling**: Always handle Prisma errors (P2002 for unique constraint, etc.)
+- **Model Relationships**: 
+  - Define clear relationship names and use `@@map` for table names
+  - Use `onDelete: Cascade` appropriately for data integrity
+- **Migrations**: 
+  - Write descriptive migration names
+  - Test migrations on development data before production
+  - Never edit generated migration files directly
+- **Schema Organization**:
+  - Group related models together
+  - Use meaningful field names that reflect business logic
+  - Add proper indexes for frequently queried fields
+- **Type Safety**: 
+  - Export Prisma types for use in other files
+  - Use Prisma's generated types instead of defining custom interfaces for models
+- **Performance**:
+  - Use connection pooling in production
+  - Monitor query performance with Prisma's query logging
+  - Implement proper database indexes for common query patterns
+
+# Bot-Database Integration Patterns
+- **User Management**: Always check if user exists in database on bot interaction, create if new.
+- **Data Validation**: Validate all user input before database operations.
+- **Async Operations**: Always use proper async/await patterns for database operations in bot handlers.
+- **Database Middleware**: Create middleware to attach database client to bot context.
+- **Error Propagation**: Handle database errors appropriately and provide user feedback.
+- **Logging**: Log all database operations for debugging and monitoring.

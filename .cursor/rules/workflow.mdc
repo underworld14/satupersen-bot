@@ -1,0 +1,88 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Rule Name: project-documentation-workflow
+Description: 
+You are an expert TypeScript, Prisma, Telegraf BOT developer working on the Satupersen project.
+
+# 📋 MANDATORY PROJECT WORKFLOW
+
+## 🔍 Before Any Development Task
+**ALWAYS** perform these steps in order before starting any coding work:
+
+1. **Read Project Requirements**: Check `/docs/prd.md` to understand:
+   - Current project scope and objectives
+   - Technical specifications
+   - Feature requirements
+   - Implementation details
+
+2. **Review Current Progress**: Check `/docs/todo.md` to:
+   - Identify which tasks are completed
+   - Find the current task priority
+   - Understand dependencies between tasks
+   - Locate the specific task you're working on
+
+3. **Validate Task Alignment**: Ensure your planned work:
+   - Matches the PRD specifications
+   - Follows the defined tech stack
+   - Aligns with current project phase
+   - Doesn't conflict with completed tasks
+
+## ✅ After Completing Any Task
+**ALWAYS** perform these steps after finishing development work:
+
+1. **Update Todo Progress**: 
+   - Mark completed tasks with `- [x]` in `/docs/todo.md`
+   - Update phase completion percentages
+   - Note any blockers or dependencies discovered
+
+2. **Document Changes**: If your work affects:
+   - Project scope → Update `/docs/prd.md`
+   - Implementation approach → Add notes to todo.md
+   - New requirements → Create follow-up tasks
+
+3. **Validate Implementation**: Ensure your code:
+   - Follows the coding standards in the PRD
+   - Uses the specified tech stack (Bun, Prisma, Telegraf, Google Gemini)
+   - Implements features as described in requirements
+   - Maintains Indonesian language support where specified
+
+## 🚫 NEVER Start Coding Without:
+- Reading the current PRD
+- Checking todo.md for task status
+- Understanding the project's current phase
+- Confirming task priority and dependencies
+
+## 🎯 Project Context Reminders
+- **Language**: Bahasa Indonesia for user-facing content
+- **Tech Stack**: Bun + Prisma + Telegraf + Google Gemini
+- **Database**: PostgreSQL with Prisma ORM
+- **Focus**: Daily reflection bot for 1% daily improvement
+- **Architecture**: Follow the file structure defined in todo.md
+
+## 📝 Task Completion Format
+When marking tasks complete in todo.md, use this format:
+```markdown
+- [x] Task name ✅ (Completed: YYYY-MM-DD)
+  - Implementation notes if needed
+  - Any follow-up tasks created
+```
+
+## 🔄 Progress Update Format
+Update phase percentages based on completed tasks:
+```markdown
+- **Phase 1**: ✅ 100% Complete (X/Y tasks done)
+- **Phase 2**: 🔄 60% Complete (X/Y tasks done)
+- **Phase 3**: ⬜ 0% Complete
+```
+
+## ⚠️ Critical Rules
+1. **NO CODING** without checking docs first
+2. **ALWAYS UPDATE** todo.md after task completion
+3. **MAINTAIN CONSISTENCY** with PRD specifications
+4. **FOLLOW PHASES** - don't jump ahead without completing dependencies
+5. **DOCUMENT DECISIONS** that deviate from original plan
+
+This workflow ensures project alignment, progress tracking, and maintains development quality throughout the Satupersen bot development lifecycle.

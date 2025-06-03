@@ -172,16 +172,3 @@ bot.command("/reflect", async (ctx) => {
   });
 });
 ```
-
----
-
-## 📝 Catatan
-
-- Penggunaan AI disederhanakan hanya untuk `reflect` dan `stats`.
-- Tidak ada reminder atau notifikasi otomatis.
-- Tidak ada ekspor PDF, namun nanti bisa ditambahkan bila aplikasi dipublikasi.
-- Fokus untuk penggunaan personal dengan pengalaman Telegram-first.
-
----
-
-Jika kamu ingin saya bantu generate scaffolding proyek `bun + telegraf + prisma + Google AI SDK`, tinggal bilang, saya bisa bantu siapkan `project template` awalnya.
