@@ -1,7 +1,3 @@
-import { config } from "dotenv";
-
-config();
-
 interface EnvironmentVariables {
   BOT_TOKEN: string;
   GOOGLE_AI_MODEL_NAME: string;
