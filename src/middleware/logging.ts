@@ -65,7 +65,7 @@ function getCommand(ctx: BotContext): string | null {
   if (ctx.message && "text" in ctx.message) {
     const text = ctx.message.text;
     if (text && text.startsWith("/")) {
-      return text.split(" ")[0];
+      return text.split(" ")[0] || null;
     }
   }
   return null;

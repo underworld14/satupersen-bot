@@ -157,26 +157,16 @@ export async function handleHelpCallbacks(ctx: BotContext): Promise<void> {
     switch (callbackData) {
       case "start_reflection":
         await ctx.answerCbQuery("Memulai refleksi...");
-        await ctx.reply(
-          "📝 *Refleksi Harian*\n\n" +
-            "Ceritakan aktivitas Anda hari ini. Apa yang sudah Anda lakukan? Apa yang dipelajari? Tantangan apa yang dihadapi?\n\n" +
-            "Tuliskan dalam pesan berikutnya:",
-          { parse_mode: "Markdown" }
-        );
+        // Call reflect command directly
+        const { reflectCommand } = await import("./reflect-command.js");
+        await reflectCommand(ctx);
         break;
 
       case "show_stats":
         await ctx.answerCbQuery("Menampilkan statistik...");
-        await ctx.reply(
-          "📈 Fitur statistik akan segera hadir! Saat ini fokus pada refleksi harian dulu ya."
-        );
-        break;
-
-      case "back_to_start":
-        await ctx.answerCbQuery("Kembali ke menu utama...");
-        // Call start command directly instead of sending text
-        const { startCommand } = await import("./start-command.js");
-        await startCommand(ctx);
+        // Call stats command directly
+        const { statsCommand } = await import("./stats-command.js");
+        await statsCommand(ctx);
         break;
 
       default:

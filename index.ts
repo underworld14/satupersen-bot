@@ -1,6 +1,8 @@
 import { Telegraf } from "telegraf";
 import { env } from "./src/utils/env-validation.js";
 import { database, db } from "./src/utils/database.js";
+import { testAIConnection } from "./src/utils/ai-client.js";
+import { ReflectionService } from "./src/services/reflection-service.js";
 import type { BotContext } from "./src/types/bot-context.js";
 
 // Middleware imports
@@ -18,6 +20,20 @@ import {
   helpCommand,
   handleHelpCallbacks,
 } from "./src/commands/help-command.js";
+import {
+  reflectCommand,
+  handleReflectionInput,
+  handleReflectionCallbacks,
+  isUserWaitingForReflection,
+} from "./src/commands/reflect-command.js";
+import {
+  summaryCommand,
+  handleSummaryCallbacks,
+} from "./src/commands/summary-command.js";
+import {
+  statsCommand,
+  handleStatsCallbacks,
+} from "./src/commands/stats-command.js";
 
 /**
  * Initialize Satupersen Bot
@@ -31,6 +47,15 @@ async function startBot(): Promise<void> {
     console.log("🔗 Connecting to database...");
     await database.connect();
 
+    // Test AI connection
+    console.log("🤖 Testing AI connection...");
+    const aiConnected = await testAIConnection();
+    if (!aiConnected) {
+      throw new Error(
+        "AI connection failed. Please check your GOOGLE_API_KEY."
+      );
+    }
+
     // Initialize Telegraf bot
     console.log("🤖 Initializing Telegram bot...");
     const bot = new Telegraf<BotContext>(env.BOT_TOKEN);
@@ -40,9 +65,10 @@ async function startBot(): Promise<void> {
     bot.use(errorHandlerMiddleware);
     bot.use(rateLimitingMiddleware);
 
-    // Attach database to context
+    // Attach database and services to context
     bot.use(async (ctx, next) => {
       ctx.db = db;
+      ctx.reflectionService = new ReflectionService(db);
       await next();
     });
 
@@ -60,49 +86,48 @@ async function startBot(): Promise<void> {
     // Register commands
     bot.start(startCommand);
     bot.help(helpCommand);
+    bot.command("reflect", reflectCommand);
+    bot.command("summary", summaryCommand);
+    bot.command("stats", statsCommand);
 
     // Handle callback queries from inline keyboards
     bot.on("callback_query", async (ctx) => {
       try {
+        // Handle global callbacks first
+        if (ctx.callbackQuery && "data" in ctx.callbackQuery) {
+          const callbackData = ctx.callbackQuery.data;
+
+          // Global back_to_start handler
+          if (callbackData === "back_to_start") {
+            await ctx.answerCbQuery("Kembali ke menu utama...");
+            await startCommand(ctx);
+            return;
+          }
+        }
+
+        // Handle command-specific callbacks
         await handleStartCallbacks(ctx);
         await handleHelpCallbacks(ctx);
+        await handleReflectionCallbacks(ctx);
+        await handleSummaryCallbacks(ctx);
+        await handleStatsCallbacks(ctx);
       } catch (error) {
         console.error("❌ Error handling callback query:", error);
         await ctx.answerCbQuery("Terjadi kesalahan, silakan coba lagi");
       }
     });
 
-    // Placeholder for /reflect command (Phase 3)
-    bot.command("reflect", async (ctx) => {
-      await ctx.reply(
-        "📝 *Fitur Refleksi sedang dalam pengembangan*\n\n" +
-          "Fitur refleksi dengan AI akan segera hadir di Phase 3! " +
-          "Saat ini Anda dapat menggunakan /start dan /help untuk navigasi.",
-        { parse_mode: "Markdown" }
-      );
-    });
-
-    // Placeholder for /summary command (Phase 3)
-    bot.command("summary", async (ctx) => {
-      await ctx.reply(
-        "📊 *Fitur Ringkasan sedang dalam pengembangan*\n\n" +
-          "Fitur ini akan tersedia setelah sistem refleksi selesai.",
-        { parse_mode: "Markdown" }
-      );
-    });
-
-    // Placeholder for /stats command (Phase 4)
-    bot.command("stats", async (ctx) => {
-      await ctx.reply(
-        "📈 *Fitur Statistik sedang dalam pengembangan*\n\n" +
-          "Fitur ini akan tersedia di Phase 4 untuk analisis perkembangan Anda.",
-        { parse_mode: "Markdown" }
-      );
-    });
-
-    // Handle unknown commands
+    // Handle text messages for reflection input
     bot.on("text", async (ctx) => {
       const message = ctx.message.text;
+
+      // Handle reflection input if user is waiting for it
+      if (ctx.user && isUserWaitingForReflection(ctx.user.telegramId)) {
+        await handleReflectionInput(ctx);
+        return;
+      }
+
+      // Handle unknown commands
       if (message.startsWith("/")) {
         await ctx.reply(
           "❓ Perintah tidak dikenali.\n\n" +
@@ -122,13 +147,17 @@ async function startBot(): Promise<void> {
     console.log("🚀 Starting Satupersen Bot...");
     await bot.launch();
 
-    console.log("✅ Satupersen Bot is running with all Phase 2 features!");
+    console.log("✅ Satupersen Bot is running with Phase 3 features!");
     console.log("📋 Available features:");
     console.log("  • User authentication and registration");
     console.log("  • Rate limiting and error handling");
     console.log("  • Comprehensive logging");
     console.log("  • /start and /help commands");
+    console.log("  • /reflect - AI-powered daily reflection");
+    console.log("  • /summary - Today's reflection summary");
+    console.log("  • /stats - Weekly reflection statistics");
     console.log("  • Inline keyboard navigation");
+    console.log("  • Google Gemini AI integration");
 
     // Graceful shutdown handling
     const gracefulShutdown = async (signal: string) => {

@@ -78,12 +78,9 @@ export async function handleStartCallbacks(ctx: BotContext): Promise<void> {
     switch (callbackData) {
       case "start_reflection":
         await ctx.answerCbQuery("Memulai refleksi...");
-        await ctx.reply(
-          "📝 *Refleksi Harian*\n\n" +
-            "Ceritakan aktivitas Anda hari ini. Apa yang sudah Anda lakukan? Apa yang dipelajari? Tantangan apa yang dihadapi?\n\n" +
-            "Tuliskan dalam pesan berikutnya:",
-          { parse_mode: "Markdown" }
-        );
+        // Call reflect command directly
+        const { reflectCommand } = await import("./reflect-command.js");
+        await reflectCommand(ctx);
         break;
 
       case "show_help":

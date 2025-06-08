@@ -14,15 +14,15 @@
 
 ## 🛠 Tech Stack
 
-| Layer          | Teknologi                                               |
-| -------------- | ------------------------------------------------------- |
-| Runtime        | Bun                                                     |
-| ORM            | Prisma ORM                                              |
-| Database       | PostgreSQL                                              |
-| Bot Framework  | Telegraf.js                                             |
-| AI Integration | **Google Gemini Flash** via `@google/generative-ai` SDK |
-| Bahasa         | 🇮🇩 Bahasa Indonesia                                     |
-| Konfigurasi AI | `.env` (nama model & API key)                           |
+| Layer          | Teknologi                                       |
+| -------------- | ----------------------------------------------- |
+| Runtime        | Bun                                             |
+| ORM            | Prisma ORM                                      |
+| Database       | PostgreSQL                                      |
+| Bot Framework  | Telegraf.js                                     |
+| AI Integration | **Google Gemini Flash** via `@google/genai` SDK |
+| Bahasa         | 🇮🇩 Bahasa Indonesia                             |
+| Konfigurasi AI | `.env` (nama model & API key)                   |
 
 ### 📂 Contoh `.env`:
 

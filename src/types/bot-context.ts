@@ -1,6 +1,7 @@
 import { Context } from "telegraf";
 import { PrismaClient } from "@prisma/client";
 import type { User, Reflection } from "@prisma/client";
+import type { ReflectionService } from "../services/reflection-service.js";
 
 /**
  * Extended Telegram context with custom properties
@@ -8,6 +9,7 @@ import type { User, Reflection } from "@prisma/client";
 export interface BotContext extends Context {
   db: PrismaClient;
   user?: User;
+  reflectionService: ReflectionService;
 }
 
 /**
