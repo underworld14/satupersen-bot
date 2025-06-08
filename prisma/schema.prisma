@@ -30,6 +30,7 @@ model Reflection {
   date       DateTime // Changed from default(now()) to allow specific date setting
   input      String
   aiSummary  String?
+  moodScore  Int?
   wordCount  Int      @default(0)
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())

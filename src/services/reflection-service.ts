@@ -3,6 +3,7 @@ import {
   generateContent,
   generateReflectionPrompt,
 } from "../utils/ai-client.js";
+import { calculateMoodScore } from "./mood-service.js";
 
 /**
  * Reflection Service - handles all reflection-related operations
@@ -74,7 +75,7 @@ export class ReflectionService {
   async createReflection(
     userId: string,
     input: string
-  ): Promise<{ reflection: Reflection; aiSummary: string }> {
+  ): Promise<{ reflection: Reflection; aiSummary: string; moodScore: number | null }> {
     try {
       // Input validation
       if (!input || input.trim().length < 10) {
@@ -91,6 +92,11 @@ export class ReflectionService {
 
       // Sanitize input
       const sanitizedInput = this.sanitizeInput(input);
+
+      // Calculate mood score
+      console.log("🤔 Calculating mood score...");
+      const calculatedMoodScore = await calculateMoodScore(sanitizedInput);
+      console.log(`👍 Mood score calculated: ${calculatedMoodScore}`);
 
       // Get previous reflections for context
       const previousReflections = await this.getLastReflections(userId, 2);
@@ -113,13 +119,14 @@ export class ReflectionService {
           userId,
           input: sanitizedInput,
           aiSummary,
+          moodScore: calculatedMoodScore, // Store the mood score
           date: new Date(),
           wordCount: sanitizedInput.split(" ").length,
         },
       });
 
-      console.log(`✅ Created reflection ${reflection.id} for user ${userId}`);
-      return { reflection, aiSummary };
+      console.log(`✅ Created reflection ${reflection.id} for user ${userId} with mood score ${calculatedMoodScore}`);
+      return { reflection, aiSummary, moodScore: calculatedMoodScore };
     } catch (error) {
       console.error("❌ Error creating reflection:", error);
 
