@@ -95,17 +95,6 @@
 
 ## 📊 Phase 4: Statistics & Analytics
 
-- [ ] Implement `moodScore` Feature
-  - [ ] Design prompt for AI to calculate `moodScore` (1-100) from user reflection text.
-  - [ ] Implement function to call AI for `moodScore` calculation.
-  - [ ] Add `moodScore` field to `Reflection` model in `prisma/schema.prisma`.
-  - [ ] Run database migration for `moodScore` field.
-  - [ ] Store calculated `moodScore` in the `Reflection` table.
-  - [ ] Integrate `moodScore` display into `/summary` command.
-  - [ ] Integrate `moodScore` display and averaging into `/stats` command.
-  - [ ] Modify AI prompt for 3-day reflection to include weekly/monthly average `moodScore` for response personalization.
-  - [ ] Add unit tests for `moodScore` calculation and integration.
-
 ### Stats Command
 
 - [x] `/stats` command implementation ✅ (Completed: 2025-01-03)

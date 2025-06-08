@@ -51,8 +51,7 @@ GOOGLE_API_KEY=your_google_api_key_here
 2. Bot meminta input aktivitas harian.
 3. Setelah pengguna mengetik, bot mengambil 2 refleksi sebelumnya (jika ada).
 4. Bot membentuk prompt refleksi 3 hari ke Gemini.
-5. Bot calculates `moodScore` based on the input.
-6. Hasil AI dan `moodScore` dikirim ke pengguna dan disimpan ke database.
+5. Hasil AI dikirim ke pengguna dan disimpan ke database.
 
 ---
 
@@ -93,8 +92,7 @@ Gunakan gaya bahasa yang ringan, positif, dan membangun semangat.
 
   - Jumlah hari input
   - Topik paling sering muncul (opsional)
-  - Rata-rata `moodScore` (skala 1-100)
-  - Tren atau insight dari `moodScore` (misalnya, apakah mood cenderung naik atau turun).
+  - Rata-rata mood (jika kelak ditambahkan)
   - Refleksi paling menonjol
   - Motivasi mingguan
 
@@ -109,18 +107,6 @@ Gunakan gaya bahasa yang ringan, positif, dan membangun semangat.
 💡 Refleksi terbaik: Hari ke-4 saat kamu menyelesaikan tugas besar
 🚀 Tetap semangat! “Kemajuan kecil setiap hari membangun masa depan luar biasa.”
 ```
-
----
-
-## 🤖 Personalisasi Respon AI dengan `moodScore`
-
-Bot akan menghitung rata-rata `moodScore` pengguna selama periode tertentu (misalnya, seminggu atau sebulan terakhir). Nilai rata-rata `moodScore` ini kemudian akan disertakan dalam prompt yang dikirim ke Gemini. Tujuannya adalah agar Gemini dapat menyesuaikan gaya bahasa dan nada responnya sesuai dengan kondisi emosional pengguna secara umum.
-
-Contohnya:
-- Jika rata-rata `moodScore` pengguna rendah, AI akan memberikan respon yang lebih empatik dan suportif.
-- Jika rata-rata `moodScore` pengguna tinggi, AI dapat memberikan respon yang lebih ceria dan bersemangat.
-
-Dengan demikian, interaksi dengan bot terasa lebih personal dan relevan dengan keadaan pengguna.
 
 ---
 
@@ -146,7 +132,6 @@ model Reflection {
   date      DateTime @default(now())
   input     String
   summary   Json
-  moodScore Int?
   User      User     @relation(fields: [userId], references: [id])
 }
 ```

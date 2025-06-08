@@ -96,7 +96,7 @@ export async function handleReflectionInput(ctx: BotContext): Promise<void> {
     );
 
     // Process reflection
-    const { reflection, aiSummary, moodScore } = // moodScore is now available
+    const { reflection, aiSummary } =
       await ctx.reflectionService.createReflection(ctx.user.id, userInput);
 
     // Delete loading message
