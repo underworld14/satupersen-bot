@@ -3,6 +3,7 @@ import { env } from "./src/utils/env-validation.js";
 import { database, db } from "./src/utils/database.js";
 import { testAIConnection } from "./src/utils/ai-client.js";
 import { ReflectionService } from "./src/services/reflection-service.js";
+import { AnalyticsService } from "./src/services/analytics-service.js"; // Added import
 import type { BotContext } from "./src/types/bot-context.js";
 
 // Middleware imports
@@ -69,6 +70,7 @@ async function startBot(): Promise<void> {
     bot.use(async (ctx, next) => {
       ctx.db = db;
       ctx.reflectionService = new ReflectionService(db);
+      ctx.analyticsService = new AnalyticsService(db); // Added service
       await next();
     });
 

@@ -2,6 +2,7 @@ import { Context } from "telegraf";
 import { PrismaClient } from "@prisma/client";
 import type { User, Reflection } from "@prisma/client";
 import type { ReflectionService } from "../services/reflection-service.js";
+import type { AnalyticsService } from "../services/analytics-service.js"; // Added import
 
 /**
  * Extended Telegram context with custom properties
@@ -10,6 +11,7 @@ export interface BotContext extends Context {
   db: PrismaClient;
   user?: User;
   reflectionService: ReflectionService;
+  analyticsService: AnalyticsService; // Added service
 }
 
 /**
@@ -55,3 +57,8 @@ export interface StatsData {
   mostActiveDay?: string;
   reflectionStreak: number;
 }
+
+/**
+ * Type for statistics period selection
+ */
+export type StatsPeriod = "weekly" | "monthly";

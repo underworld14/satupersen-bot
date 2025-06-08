@@ -1,4 +1,5 @@
 import type { PrismaClient, Reflection } from "@prisma/client";
+import type { StatsPeriod } from "../types/bot-context.js"; // Added import
 import {
   generateContent,
   generateReflectionPrompt,
@@ -31,6 +32,96 @@ export class ReflectionService {
     } catch (error) {
       console.error("❌ Error fetching reflections:", error);
       throw new Error("Failed to retrieve previous reflections");
+    }
+  }
+
+  /**
+   * Get concatenated text of all reflections for a user within a given period.
+   */
+  async getReflectionsTextForPeriod(
+    userId: string,
+    period: StatsPeriod
+  ): Promise<string> {
+    try {
+      const days = period === "weekly" ? 7 : 30;
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+
+      const reflections = await this.getReflectionsInRange(
+        userId,
+        startDate,
+        new Date()
+      );
+
+      if (reflections.length === 0) {
+        return "";
+      }
+
+      // Concatenate all reflection inputs, separated by a clear marker for the AI.
+      const combinedText = reflections
+        .map((r) => r.input)
+        .join("\n\n---\n\n"); // Using "---" as a separator between reflections
+
+      console.log(
+        `📝 Combined text of ${reflections.length} reflections for user ${userId} for ${period} period.`
+      );
+      return combinedText;
+    } catch (error) {
+      console.error(
+        `❌ Error fetching reflection texts for period ${period}:`,
+        error
+      );
+      throw new Error(
+        `Failed to retrieve reflection texts for the ${period} period`
+      );
+    }
+  }
+
+  /**
+   * Get monthly statistics (last 30 days)
+   */
+  async getMonthlyStats(userId: string): Promise<{
+    totalDays: number;
+    reflectionCount: number;
+    averageWordsPerDay: number;
+    mostActiveDay: string;
+  }> {
+    try {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const reflections = await this.getReflectionsInRange(
+        userId,
+        thirtyDaysAgo,
+        new Date()
+      );
+
+      const totalWords = reflections.reduce((sum, r) => sum + r.wordCount, 0);
+      const averageWords =
+        reflections.length > 0
+          ? Math.round(totalWords / reflections.length)
+          : 0;
+
+      // Find most active day
+      const dayCount: Record<string, number> = {};
+      reflections.forEach((r) => {
+        const day = r.date.toLocaleDateString("id-ID", { weekday: "long" });
+        dayCount[day] = (dayCount[day] || 0) + 1;
+      });
+
+      const mostActiveDay =
+        Object.entries(dayCount).sort(([, a], [, b]) => b - a)[0]?.[0] ||
+        "Belum ada data";
+
+      return {
+        totalDays: 30,
+        reflectionCount: reflections.length,
+        averageWordsPerDay: averageWords,
+        mostActiveDay,
+      };
+    } catch (error) {
+      console.error("❌ Error generating monthly stats:", error);
+      throw new Error("Failed to generate monthly statistics");
     }
   }
 
