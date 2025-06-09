@@ -56,6 +56,11 @@ export async function summaryCommand(ctx: BotContext): Promise<void> {
       `📊 *Ringkasan Refleksi Hari Ini*\n\n` +
       `📅 *Tanggal:* ${reflectionDate}\n` +
       `📝 *Jumlah kata:* ${todayReflection.wordCount} kata\n` +
+      `😊 *Skor Mood Hari Ini:* ${
+        todayReflection.moodScore !== null
+          ? `${todayReflection.moodScore}/100`
+          : "N/A"
+      }\n` +
       `⏰ *Waktu refleksi:* ${todayReflection.createdAt.toLocaleTimeString(
         "id-ID",
         { hour: "2-digit", minute: "2-digit" }

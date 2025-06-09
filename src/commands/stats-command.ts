@@ -221,10 +221,12 @@ async function sendStatsView(ctx: BotContext, period: StatsPeriod): Promise<void
         `📝 *Jumlah Refleksi:* ${kpiData.reflectionCount} dari ${kpiData.totalDays} hari\n` +
         `📈 *Tingkat Konsistensi:* ${completionPercentage.toFixed(2)}%\n` +
         `🔄 *Frekuensi Refleksi:* ${frequencyString}\n` +
-        `📉 *Tren Frekuensi:* ${trend}\n` + // Added Trend
+        `📉 *Tren Frekuensi Refleksi:* ${trend}\n` +
+        `😊 *Rata-rata Skor Mood:* ${kpiData.averageMoodScore !== null ? `${kpiData.averageMoodScore}/100` : "N/A"}\n` +
+        `🧠 *Tren Skor Mood:* ${kpiData.moodScoreTrend}\n` +
         `📏 *Rata-rata Kata/Refleksi:* ${kpiData.averageWordsPerDay.toFixed(2)} kata\n` +
         `⭐ *Hari Paling Aktif:* ${kpiData.mostActiveDay}\n\n` +
-        (kpiData.reflectionCount > 1 ? commonThemesText : "Refleksi minimal 2 untuk melihat tema umum.\n\n") + // Corrected to kpiData
+        (kpiData.reflectionCount > 1 ? commonThemesText : "Refleksi minimal 2 untuk melihat tema umum.\n\n") +
         `🎯 *Motivasi Personal:* ${motivationMessage}\n` +
         insightsText + // Added Insights
         `\n💡 *Tips Umum:* ${

@@ -142,6 +142,124 @@ async function runAnalyticsServiceTests() {
     if (Math.abs(kpis.consistencyPercentage - 50) > 0.01) throw new Error(`Expected 50% consistency, got ${kpis.consistencyPercentage}`); // 15/30
     // Sum of word counts: 5*(10+20+30) = 5*60 = 300. Avg = 300/15 = 20
     if (kpis.averageWordsPerDay !== 20) throw new Error(`Expected 20 average words for monthly, got ${kpis.averageWordsPerDay}`);
+    // Mood score related KPIs should be null/N/A by default if not set in mock reflections
+    if (kpis.averageMoodScore !== null) throw new Error(`Expected averageMoodScore to be null, got ${kpis.averageMoodScore}`);
+    if (kpis.moodScoreTrend !== "N/A") throw new Error(`Expected moodScoreTrend to be N/A, got ${kpis.moodScoreTrend}`);
+  });
+
+  // --- Tests for moodScore in calculateReflectionKPIs ---
+  const createReflection = (id: string, date: string, moodScore: number | null, wordCount = 10): Reflection => ({
+    id, userId: "user-mood-test", date: new Date(date), input: "test", aiSummary: "summary", createdAt: new Date(), updatedAt: new Date(), wordCount, moodScore,
+  });
+
+  await test("calculateReflectionKPIs - no reflections with moodScore", async () => {
+    // @ts-ignore
+    mockDb.reflection.findMany = async () => [
+      createReflection("r1", "2023-01-01", null),
+      createReflection("r2", "2023-01-02", null),
+    ];
+    const kpis = await analyticsService.calculateReflectionKPIs("user-mood-test", "weekly");
+    if (kpis.averageMoodScore !== null) throw new Error(`Expected null averageMoodScore, got ${kpis.averageMoodScore}`);
+    if (kpis.moodScoreTrend !== "N/A") throw new Error(`Expected N/A trend, got ${kpis.moodScoreTrend}`);
+  });
+
+  await test("calculateReflectionKPIs - single reflection with moodScore", async () => {
+    // @ts-ignore
+    mockDb.reflection.findMany = async () => [createReflection("r1", "2023-01-01", 70)];
+    const kpis = await analyticsService.calculateReflectionKPIs("user-mood-test", "weekly");
+    if (kpis.averageMoodScore !== 70) throw new Error(`Expected 70 averageMoodScore, got ${kpis.averageMoodScore}`);
+    if (kpis.moodScoreTrend !== "Stabil") throw new Error(`Expected Stabil trend, got ${kpis.moodScoreTrend}`);
+  });
+
+  await test("calculateReflectionKPIs - multiple reflections, calculates average moodScore", async () => {
+    // @ts-ignore
+    mockDb.reflection.findMany = async () => [
+      createReflection("r1", "2023-01-01", 60),
+      createReflection("r2", "2023-01-02", 70),
+      createReflection("r3", "2023-01-03", 80),
+      createReflection("r4", "2023-01-04", null), // Should be ignored
+    ];
+    const kpis = await analyticsService.calculateReflectionKPIs("user-mood-test", "weekly");
+    if (kpis.averageMoodScore !== 70) throw new Error(`Expected 70 averageMoodScore (60+70+80)/3, got ${kpis.averageMoodScore}`);
+  });
+
+  await test("calculateReflectionKPIs - moodScoreTrend 'Meningkat' (weekly)", async () => {
+    // @ts-ignore
+    mockDb.reflection.findMany = async () => [ // findMany returns in desc order by default in service
+      createReflection("r4", "2023-01-04", 90), // sortedReflections.reverse() makes this last
+      createReflection("r3", "2023-01-03", 80),
+      createReflection("r2", "2023-01-02", 70),
+      createReflection("r1", "2023-01-01", 60), // sortedReflections.reverse() makes this first
+    ];
+    // Service logic reverses for chronological trend: first half [60,70], second half [80,90]
+    // Avg first half = 65, Avg second half = 85. Trend: Meningkat
+    const kpis = await analyticsService.calculateReflectionKPIs("user-mood-test", "weekly");
+    if (kpis.averageMoodScore !== 75) throw new Error(`Avg mood score error, got ${kpis.averageMoodScore}`);
+    if (kpis.moodScoreTrend !== "Meningkat") throw new Error(`Expected Meningkat trend, got ${kpis.moodScoreTrend}`);
+  });
+
+  await test("calculateReflectionKPIs - moodScoreTrend 'Menurun' (weekly)", async () => {
+    // @ts-ignore
+    mockDb.reflection.findMany = async () => [ // desc order
+      createReflection("r4", "2023-01-04", 60),
+      createReflection("r3", "2023-01-03", 70),
+      createReflection("r2", "2023-01-02", 80),
+      createReflection("r1", "2023-01-01", 90),
+    ];
+    // Chronological: [90,80], [70,60]. Avg first = 85, Avg second = 65. Trend: Menurun
+    const kpis = await analyticsService.calculateReflectionKPIs("user-mood-test", "weekly");
+    if (kpis.moodScoreTrend !== "Menurun") throw new Error(`Expected Menurun trend, got ${kpis.moodScoreTrend}`);
+  });
+
+  await test("calculateReflectionKPIs - moodScoreTrend 'Stabil' (weekly, identical averages)", async () => {
+    // @ts-ignore
+    mockDb.reflection.findMany = async () => [
+      createReflection("r4", "2023-01-04", 80),
+      createReflection("r3", "2023-01-03", 70),
+      createReflection("r2", "2023-01-02", 80),
+      createReflection("r1", "2023-01-01", 70),
+    ];
+    // Chronological: [70,80], [70,80]. Avg first = 75, Avg second = 75. Trend: Stabil
+    const kpis = await analyticsService.calculateReflectionKPIs("user-mood-test", "weekly");
+    if (kpis.moodScoreTrend !== "Stabil") throw new Error(`Expected Stabil trend, got ${kpis.moodScoreTrend}`);
+  });
+
+  await test("calculateReflectionKPIs - moodScoreTrend 'Stabil' (weekly, insufficient for trend but has data)", async () => {
+    // @ts-ignore
+    mockDb.reflection.findMany = async () => [createReflection("r1", "2023-01-01", 70)]; // Only 1 point
+    const kpis = await analyticsService.calculateReflectionKPIs("user-mood-test", "weekly");
+    if (kpis.moodScoreTrend !== "Stabil") throw new Error(`Expected Stabil trend for single point, got ${kpis.moodScoreTrend}`);
+  });
+
+  await test("calculateReflectionKPIs - moodScoreTrend 'N/A' (no mood scores)", async () => {
+    // @ts-ignore
+    mockDb.reflection.findMany = async () => [createReflection("r1", "2023-01-01", null)];
+    const kpis = await analyticsService.calculateReflectionKPIs("user-mood-test", "weekly");
+    if (kpis.moodScoreTrend !== "N/A") throw new Error(`Expected N/A trend, got ${kpis.moodScoreTrend}`);
+  });
+
+  await test("calculateReflectionKPIs - moodScoreTrend 'Stabil' (monthly, <4 data points)", async () => {
+    // @ts-ignore
+    mockDb.reflection.findMany = async () => [
+      createReflection("r1", "2023-01-01", 70),
+      createReflection("r2", "2023-01-05", 75),
+      createReflection("r3", "2023-01-10", 70),
+    ]; // 3 points, monthly needs >=4 for trend calc beyond "Stabil"
+    const kpis = await analyticsService.calculateReflectionKPIs("user-mood-test", "monthly");
+    if (kpis.moodScoreTrend !== "Stabil") throw new Error(`Expected Stabil trend for <4 points monthly, got ${kpis.moodScoreTrend}`);
+  });
+
+  await test("calculateReflectionKPIs - moodScoreTrend 'Meningkat' (monthly, >=4 data points)", async () => {
+    // @ts-ignore
+    mockDb.reflection.findMany = async () => [ // desc
+        createReflection("r4", "2023-01-15", 90),
+        createReflection("r3", "2023-01-10", 85),
+        createReflection("r2", "2023-01-05", 75),
+        createReflection("r1", "2023-01-01", 70),
+    ];
+    // Chrono: [70,75], [85,90]. Avg1=72.5, Avg2=87.5. Trend: Meningkat
+    const kpis = await analyticsService.calculateReflectionKPIs("user-mood-test", "monthly");
+    if (kpis.moodScoreTrend !== "Meningkat") throw new Error(`Expected Meningkat trend monthly, got ${kpis.moodScoreTrend}`);
   });
 
 
