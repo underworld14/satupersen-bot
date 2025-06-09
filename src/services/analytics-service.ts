@@ -87,7 +87,16 @@ export class AnalyticsService {
   async calculateReflectionKPIs(
     userId: string,
     period: StatsPeriod = "monthly"
-  ): Promise<Record<string, any>> {
+  ): Promise<{
+    totalDays: number;
+    reflectionCount: number;
+    consistencyPercentage: number;
+    averageWordsPerDay: number;
+    mostActiveDay: string;
+    averageMoodScore: number | null;
+    moodScoreTrend: string;
+    status: string;
+  }> {
     console.log(`📊 Calculating reflection KPIs for user ${userId} over ${period} period.`);
     const days = period === "weekly" ? 7 : 30;
     const endDate = new Date();
@@ -96,7 +105,7 @@ export class AnalyticsService {
 
     const reflections = await this.db.reflection.findMany({
         where: { userId, date: { gte: startDate, lte: endDate } },
-        orderBy: { date: "asc" },
+        orderBy: { date: "desc" }, // Keep it desc to match ReflectionService for now, reverse later if needed for trend
     });
 
     const reflectionCount = reflections.length;
@@ -116,15 +125,62 @@ export class AnalyticsService {
         Object.entries(dayCount).sort(([, a], [, b]) => b - a)[0]?.[0] || "Belum ada data";
     }
 
-    // Placeholder for more advanced KPIs
+    // MoodScore calculations
+    const reflectionsWithMoodScore = reflections.filter(
+      (r) => r.moodScore !== null && r.moodScore >= 1 && r.moodScore <= 100
+    );
+    let averageMoodScore: number | null = null;
+    let moodScoreTrend = "N/A";
+
+    if (reflectionsWithMoodScore.length > 0) {
+      const sumMoodScore = reflectionsWithMoodScore.reduce(
+        (sum, r) => sum + (r.moodScore ?? 0),
+        0
+      );
+      averageMoodScore = Math.round(
+        sumMoodScore / reflectionsWithMoodScore.length
+      );
+
+      const sortedReflections = [...reflectionsWithMoodScore].reverse(); // reverse to get chronological order
+
+      if (period === "weekly") {
+        if (sortedReflections.length >= 2) {
+          const midPoint = Math.ceil(sortedReflections.length / 2);
+          const firstHalfScores = sortedReflections.slice(0, midPoint).map((r) => r.moodScore ?? 0);
+          const secondHalfScores = sortedReflections.slice(midPoint).map((r) => r.moodScore ?? 0);
+          if (firstHalfScores.length > 0 && secondHalfScores.length > 0) {
+            const avgFirstHalf = firstHalfScores.reduce((a, b) => a + b, 0) / firstHalfScores.length;
+            const avgSecondHalf = secondHalfScores.reduce((a, b) => a + b, 0) / secondHalfScores.length;
+            if (avgSecondHalf > avgFirstHalf) moodScoreTrend = "Meningkat";
+            else if (avgSecondHalf < avgFirstHalf) moodScoreTrend = "Menurun";
+            else moodScoreTrend = "Stabil";
+          } else if (sortedReflections.length >=1) moodScoreTrend = "Stabil";
+        } else if (sortedReflections.length === 1) moodScoreTrend = "Stabil";
+      } else { // monthly
+        if (sortedReflections.length >= 4) { // Require more data for monthly trend
+          const midPoint = Math.ceil(sortedReflections.length / 2);
+          const firstHalfScores = sortedReflections.slice(0, midPoint).map((r) => r.moodScore ?? 0);
+          const secondHalfScores = sortedReflections.slice(midPoint).map((r) => r.moodScore ?? 0);
+          if (firstHalfScores.length > 0 && secondHalfScores.length > 0) {
+            const avgFirstHalf = firstHalfScores.reduce((a, b) => a + b, 0) / firstHalfScores.length;
+            const avgSecondHalf = secondHalfScores.reduce((a, b) => a + b, 0) / secondHalfScores.length;
+            if (avgSecondHalf > avgFirstHalf) moodScoreTrend = "Meningkat";
+            else if (avgSecondHalf < avgFirstHalf) moodScoreTrend = "Menurun";
+            else moodScoreTrend = "Stabil";
+          } else if (sortedReflections.length >=1) moodScoreTrend = "Stabil";
+        } else if (sortedReflections.length >= 1) moodScoreTrend = "Stabil";
+      }
+    }
+
     return {
-      totalDays: days, // Renamed from 'period' for clarity and compatibility
-      reflectionCount, // Equivalent to StatsData.totalReflections
+      totalDays: days,
+      reflectionCount,
       consistencyPercentage: parseFloat(consistency.toFixed(2)),
-      averageWordsPerDay: parseFloat(averageWordCount.toFixed(2)), // Renamed for compatibility
+      averageWordsPerDay: parseFloat(averageWordCount.toFixed(2)),
       mostActiveDay,
-      // reflectionStreak: 0, // Placeholder for future streak calculation
-      status: "Data KPI dasar. Fitur lanjutan dalam pengembangan.", // Additional info
+      averageMoodScore,
+      moodScoreTrend,
+      status: "Data KPI dasar. Fitur lanjutan dalam pengembangan.",
     };
   }
 

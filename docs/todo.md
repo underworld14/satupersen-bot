@@ -112,6 +112,28 @@
 - [x] Create performance metrics ✅
 - [x] Generate insights and recommendations ✅
 
+### 🧠 moodScore Implementation (100%)
+- [x] **Database Schema for `moodScore`**:
+    - [x] Add `moodScore Int?` to `Reflection` model in `prisma/schema.prisma`.
+    - [x] Generate and run migration (`bunx prisma migrate dev --name added_mood_score`).
+- [x] **`moodScore` Generation Logic**:
+    - [x] Update AI prompt in `reflection-service.ts` (via `ai-client.ts`) to request `moodScore` (1-100) from user's reflection.
+    - [x] Modify AI response processing in `reflection-service.ts` to extract and save `moodScore`.
+    - [x] Handle potential errors if `moodScore` is not returned or invalid.
+- [x] **Command Integration**:
+    - [x] `/reflect`: Ensure `moodScore` is saved with new reflection.
+    - [x] `/stats`:
+        - [x] Modify `analytics-service.ts` to calculate average `moodScore` and trend.
+        - [x] Update `stats-command.ts` to display `moodScore` information.
+    - [x] `/summary`: Display daily `moodScore`.
+- [x] **Enhanced AI Context**:
+    - [x] Modify AI interaction logic (e.g., in `ai-client.ts` or related services) to use weekly/monthly average `moodScore` for better AI understanding.
+        *   *Note: Average `moodScore` (weekly/monthly) is calculable via `AnalyticsService`. Decided against sending this to the current reflection AI prompt (which *generates* daily `moodScore`) to avoid circular reasoning. This average score is available for future, distinct AI interactions.*
+- [x] **Testing**:
+    - [x] Unit test `moodScore` extraction.
+    - [x] Unit test `moodScore` analytics (average, trend).
+    - [x] Test `moodScore` display in `/stats` and `/summary` (conceptual, core logic tested in services).
+
 ## 🎨 Phase 5: User Experience & Polish
 
 ### Message Formatting
@@ -236,7 +258,7 @@
 - **Phase 1**: ✅ 100% Complete
 - **Phase 2**: ✅ 100% Complete
 - **Phase 3**: ✅ 100% Complete
-- **Phase 4**: ⬜ 0% Complete
+- **Phase 4**: ✅ 100% Complete
 - **Phase 5**: ⬜ 0% Complete
 - **Phase 6**: ⬜ 0% Complete
 - **Phase 7**: ⬜ 0% Complete

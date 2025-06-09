@@ -9,6 +9,7 @@
 - Membandingkan refleksi 3 hari terakhir untuk melihat perkembangan.
 - Memberikan saran dan motivasi harian.
 - Melihat statistik ringkasan dalam seminggu atau sebulan terakhir.
+- Melacak kesejahteraan emosional pengguna melalui `moodScore`.
 
 ---
 
@@ -33,14 +34,31 @@ GOOGLE_API_KEY=your_google_api_key_here
 
 ---
 
+## ✨ Fitur moodScore
+
+`moodScore` adalah sebuah skor numerik dari 1 hingga 100 yang merepresentasikan suasana hati atau kondisi emosional pengguna pada hari tertentu.
+
+**Bagaimana `moodScore` dihasilkan?**
+Skor ini dihasilkan secara otomatis oleh AI (Google Gemini Flash) berdasarkan analisis teks refleksi harian yang ditulis oleh pengguna. AI akan mengevaluasi sentimen dan konten refleksi untuk menentukan skor yang paling sesuai.
+
+**Tujuan `moodScore`:**
+- Memberikan ukuran kuantitatif terhadap suasana hati harian.
+- Membantu AI memahami tren emosional pengguna dari waktu ke waktu, sehingga dapat memberikan respon yang lebih personal dan relevan.
+- Membantu pengguna menyadari pola suasana hatinya.
+
+**Penyimpanan `moodScore`:**
+Setiap `moodScore` akan disimpan dalam database dan terhubung dengan catatan refleksi harian masing-masing pengguna.
+
+---
+
 ## 📱 Telegram Bot Commands
 
 | Command    | Fungsi                                                                 |
 | ---------- | ---------------------------------------------------------------------- |
 | `/start`   | Memulai bot dan menyapa pengguna                                       |
 | `/reflect` | Menginput refleksi harian (manual)                                     |
-| `/summary` | Menampilkan ringkasan refleksi hari ini                                |
-| `/stats`   | Melihat statistik mingguan/bulanan (opsional berdasarkan ketersediaan) |
+| `/summary` | Menampilkan ringkasan refleksi hari ini (termasuk `moodScore`)         |
+| `/stats`   | Melihat statistik mingguan/bulanan (termasuk info `moodScore`)         |
 | `/help`    | Menampilkan panduan singkat penggunaan bot                             |
 
 ---
@@ -77,6 +95,7 @@ Tolong bantu:
 3. Hal positif dan yang bisa ditingkatkan
 4. Saran untuk hari esok
 5. Motivasi singkat
+6. `moodScore` (skor 1-100 berdasarkan analisis sentimen refleksi hari ini)
 
 Gunakan gaya bahasa yang ringan, positif, dan membangun semangat.
 ```
@@ -92,7 +111,8 @@ Gunakan gaya bahasa yang ringan, positif, dan membangun semangat.
 
   - Jumlah hari input
   - Topik paling sering muncul (opsional)
-  - Rata-rata mood (jika kelak ditambahkan)
+  - Rata-rata `moodScore`
+  - Tren `moodScore` (misalnya: meningkat, menurun, stabil)
   - Refleksi paling menonjol
   - Motivasi mingguan
 
@@ -102,11 +122,19 @@ Gunakan gaya bahasa yang ringan, positif, dan membangun semangat.
 📊 Statistik Refleksi Mingguan:
 
 🗓 Jumlah hari tercatat: 6 dari 7
+😊 Rata-rata `moodScore`: 75
+📈 Tren `moodScore`: Meningkat
 🔥 Kebiasaan dominan: Menulis jurnal, olahraga pagi
-📈 Perkembangan: Kamu mulai lebih konsisten dari pertengahan minggu
-💡 Refleksi terbaik: Hari ke-4 saat kamu menyelesaikan tugas besar
+💡 Perkembangan: Kamu mulai lebih konsisten dari pertengahan minggu
+✨ Refleksi terbaik: Hari ke-4 saat kamu menyelesaikan tugas besar
 🚀 Tetap semangat! “Kemajuan kecil setiap hari membangun masa depan luar biasa.”
 ```
+
+---
+
+### ✨ Peningkatan Konteks AI dengan `moodScore` Rata-Rata
+
+Untuk meningkatkan kualitas interaksi dan relevansi saran dari AI, bot akan menghitung rata-rata `moodScore` pengguna secara mingguan dan bulanan. Informasi rata-rata `moodScore` ini akan disertakan dalam prompt ke AI (selain refleksi harian). Dengan adanya data tren emosional jangka panjang ini, AI diharapkan dapat memberikan respons yang lebih empatik, personal, dan memahami konteks pengguna secara lebih mendalam.
 
 ---
 
@@ -132,6 +160,7 @@ model Reflection {
   date      DateTime @default(now())
   input     String
   summary   Json
+  moodScore Int? // Skor suasana hati (1-100), opsional jika AI tidak dapat menghasilkan
   User      User     @relation(fields: [userId], references: [id])
 }
 ```

@@ -85,6 +85,8 @@ export class ReflectionService {
     reflectionCount: number;
     averageWordsPerDay: number;
     mostActiveDay: string;
+    averageMoodScore: number | null;
+    moodScoreTrend: string;
   }> {
     try {
       const thirtyDaysAgo = new Date();
@@ -95,6 +97,60 @@ export class ReflectionService {
         thirtyDaysAgo,
         new Date()
       );
+
+      // MoodScore calculations
+      const reflectionsWithMoodScore = reflections.filter(
+        (r) => r.moodScore !== null && r.moodScore >= 1 && r.moodScore <= 100
+      );
+      let averageMoodScore: number | null = null;
+      let moodScoreTrend = "N/A";
+
+      if (reflectionsWithMoodScore.length > 0) {
+        const sumMoodScore = reflectionsWithMoodScore.reduce(
+          (sum, r) => sum + (r.moodScore ?? 0), // Nullish coalescing for safety
+          0
+        );
+        averageMoodScore = Math.round(
+          sumMoodScore / reflectionsWithMoodScore.length
+        );
+
+        // Trend calculation: Compare average of first half of reflections with moodscore vs second half.
+        // Reflections are ordered desc by date from getReflectionsInRange, so reverse for chronological trend.
+        const sortedReflections = [...reflectionsWithMoodScore].reverse();
+
+        // For monthly, require more data points for a meaningful trend than weekly.
+        if (sortedReflections.length >= 4) {
+          const midPoint = Math.ceil(sortedReflections.length / 2);
+          const firstHalfScores = sortedReflections
+            .slice(0, midPoint)
+            .map((r) => r.moodScore ?? 0);
+          const secondHalfScores = sortedReflections
+            .slice(midPoint)
+            .map((r) => r.moodScore ?? 0);
+
+          if (firstHalfScores.length > 0 && secondHalfScores.length > 0) {
+            const avgFirstHalf =
+              firstHalfScores.reduce((a, b) => a + b, 0) /
+              firstHalfScores.length;
+            const avgSecondHalf =
+              secondHalfScores.reduce((a, b) => a + b, 0) /
+              secondHalfScores.length;
+
+            if (avgSecondHalf > avgFirstHalf) {
+              moodScoreTrend = "Meningkat";
+            } else if (avgSecondHalf < avgFirstHalf) {
+              moodScoreTrend = "Menurun";
+            } else {
+              moodScoreTrend = "Stabil";
+            }
+          } else if (sortedReflections.length >= 1) { // Should not happen if length >=4 and midPoint logic is correct
+             moodScoreTrend = "Stabil";
+          }
+        } else if (sortedReflections.length >= 1) {
+          // Not enough data for trend, but has an average
+          moodScoreTrend = "Stabil";
+        }
+      }
 
       const totalWords = reflections.reduce((sum, r) => sum + r.wordCount, 0);
       const averageWords =
@@ -118,6 +174,8 @@ export class ReflectionService {
         reflectionCount: reflections.length,
         averageWordsPerDay: averageWords,
         mostActiveDay,
+        averageMoodScore,
+        moodScoreTrend,
       };
     } catch (error) {
       console.error("❌ Error generating monthly stats:", error);
@@ -196,21 +254,42 @@ export class ReflectionService {
       });
 
       console.log("🤖 Generating AI analysis...");
-      const aiSummary = await generateContent(prompt);
+      let aiResponseText = await generateContent(prompt);
+
+      let moodScore: number | null = null;
+      const moodScoreRegex = /moodScore:\s*(\d+)/i;
+      const match = aiResponseText.match(moodScoreRegex);
+
+      if (match && match[1]) {
+        const score = parseInt(match[1], 10);
+        if (score >= 1 && score <= 100) {
+          moodScore = score;
+          console.log(`😊 Extracted moodScore: ${moodScore}`);
+        } else {
+          console.warn(
+            `⚠️ Invalid moodScore extracted: ${match[1]}. Storing as null.`
+          );
+        }
+        // Remove the moodScore line from the AI summary to be shown to the user
+        aiResponseText = aiResponseText.replace(moodScoreRegex, "").trim();
+      } else {
+        console.warn("⚠️ moodScore not found in AI response.");
+      }
 
       // Save reflection to database
       const reflection = await this.db.reflection.create({
         data: {
           userId,
           input: sanitizedInput,
-          aiSummary,
+          aiSummary: aiResponseText, // Store the cleaned summary
+          moodScore, // Store the extracted moodScore
           date: new Date(),
           wordCount: sanitizedInput.split(" ").length,
         },
       });
 
       console.log(`✅ Created reflection ${reflection.id} for user ${userId}`);
-      return { reflection, aiSummary };
+      return { reflection, aiSummary: aiResponseText };
     } catch (error) {
       console.error("❌ Error creating reflection:", error);
 
@@ -267,6 +346,8 @@ export class ReflectionService {
     reflectionCount: number;
     averageWordsPerDay: number;
     mostActiveDay: string;
+    averageMoodScore: number | null;
+    moodScoreTrend: string;
   }> {
     try {
       const oneWeekAgo = new Date();
@@ -277,6 +358,58 @@ export class ReflectionService {
         oneWeekAgo,
         new Date()
       );
+
+      // MoodScore calculations
+      const reflectionsWithMoodScore = reflections.filter(
+        (r) => r.moodScore !== null && r.moodScore >= 1 && r.moodScore <= 100
+      );
+      let averageMoodScore: number | null = null;
+      let moodScoreTrend = "N/A";
+
+      if (reflectionsWithMoodScore.length > 0) {
+        const sumMoodScore = reflectionsWithMoodScore.reduce(
+          (sum, r) => sum + (r.moodScore ?? 0), // Nullish coalescing for safety, though filter should prevent nulls
+          0
+        );
+        averageMoodScore = Math.round(
+          sumMoodScore / reflectionsWithMoodScore.length
+        );
+
+        // Trend calculation: Compare average of first half of reflections with moodscore vs second half.
+        // Reflections are ordered desc by date from getReflectionsInRange, so reverse for chronological trend.
+        const sortedReflections = [...reflectionsWithMoodScore].reverse();
+
+        if (sortedReflections.length >= 2) {
+          const midPoint = Math.ceil(sortedReflections.length / 2);
+          const firstHalfScores = sortedReflections
+            .slice(0, midPoint)
+            .map((r) => r.moodScore ?? 0);
+          const secondHalfScores = sortedReflections
+            .slice(midPoint)
+            .map((r) => r.moodScore ?? 0);
+
+          if (firstHalfScores.length > 0 && secondHalfScores.length > 0) {
+            const avgFirstHalf =
+              firstHalfScores.reduce((a, b) => a + b, 0) /
+              firstHalfScores.length;
+            const avgSecondHalf =
+              secondHalfScores.reduce((a, b) => a + b, 0) /
+              secondHalfScores.length;
+
+            if (avgSecondHalf > avgFirstHalf) {
+              moodScoreTrend = "Meningkat";
+            } else if (avgSecondHalf < avgFirstHalf) {
+              moodScoreTrend = "Menurun";
+            } else {
+              moodScoreTrend = "Stabil";
+            }
+          } else if (sortedReflections.length >=1) { // If only one half has data (e.g. 1 score in first, 0 in second due to ceil)
+            moodScoreTrend = "Stabil";
+          }
+        } else if (sortedReflections.length === 1) {
+          moodScoreTrend = "Stabil"; // Only one data point
+        }
+      }
 
       const totalWords = reflections.reduce((sum, r) => sum + r.wordCount, 0);
       const averageWords =
@@ -300,6 +433,8 @@ export class ReflectionService {
         reflectionCount: reflections.length,
         averageWordsPerDay: averageWords,
         mostActiveDay,
+        averageMoodScore,
+        moodScoreTrend,
       };
     } catch (error) {
       console.error("❌ Error generating weekly stats:", error);
