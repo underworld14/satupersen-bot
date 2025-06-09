@@ -98,26 +98,3 @@ export async function summaryCommand(ctx: BotContext): Promise<void> {
     );
   }
 }
-
-/**
- * Handle summary-related callbacks
- */
-export async function handleSummaryCallbacks(ctx: BotContext): Promise<void> {
-  if (!ctx.callbackQuery || !("data" in ctx.callbackQuery)) {
-    return;
-  }
-
-  const callbackData = ctx.callbackQuery.data;
-
-  try {
-    switch (callbackData) {
-      case "show_summary":
-        await ctx.answerCbQuery("Menampilkan ringkasan...");
-        await summaryCommand(ctx);
-        break;
-    }
-  } catch (error) {
-    console.error("Error handling summary callback:", error);
-    await ctx.answerCbQuery("Terjadi kesalahan, silakan coba lagi");
-  }
-}

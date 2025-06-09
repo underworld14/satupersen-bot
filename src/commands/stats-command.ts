@@ -48,7 +48,7 @@ export async function statsCommand(ctx: BotContext): Promise<void> {
 /**
  * Sends the statistics view (weekly or monthly)
  */
-async function sendStatsView(
+export async function sendStatsView(
   ctx: BotContext,
   period: StatsPeriod
 ): Promise<void> {
@@ -349,61 +349,5 @@ async function sendStatsView(
         period === "weekly" ? "mingguan" : "bulanan"
       }. Silakan coba lagi.`
     );
-  }
-}
-
-/**
- * Handle stats-related callbacks
- */
-export async function handleStatsCallbacks(ctx: BotContext): Promise<void> {
-  if (!ctx.callbackQuery || !("data" in ctx.callbackQuery)) {
-    return;
-  }
-
-  const callbackData = ctx.callbackQuery.data;
-
-  try {
-    switch (callbackData) {
-      case "show_stats": // This will now show the period selection
-      case "show_stats_opnieuw":
-        await ctx.answerCbQuery("Pilih periode statistik...");
-        // Edit message to show period selection or send new one if original message is too old to edit
-        if (ctx.callbackQuery.message) {
-          await ctx.editMessageText(
-            "📊 Pilih periode statistik yang ingin Anda lihat:",
-            {
-              reply_markup: {
-                inline_keyboard: [
-                  [
-                    {
-                      text: "📅 Mingguan (7 hari)",
-                      callback_data: "show_weekly_stats",
-                    },
-                    {
-                      text: "🗓 Bulanan (30 hari)",
-                      callback_data: "show_monthly_stats",
-                    },
-                  ],
-                  [{ text: "🏠 Menu Utama", callback_data: "back_to_start" }],
-                ],
-              },
-            }
-          );
-        } else {
-          await statsCommand(ctx); // Fallback to sending a new message
-        }
-        break;
-      case "show_weekly_stats":
-        await ctx.answerCbQuery("Menampilkan statistik mingguan...");
-        await sendStatsView(ctx, "weekly");
-        break;
-      case "show_monthly_stats":
-        await ctx.answerCbQuery("Menampilkan statistik bulanan...");
-        await sendStatsView(ctx, "monthly");
-        break;
-    }
-  } catch (error) {
-    console.error("Error handling stats callback:", error);
-    await ctx.answerCbQuery("Terjadi kesalahan, silakan coba lagi");
   }
 }

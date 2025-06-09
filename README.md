@@ -129,6 +129,8 @@ satupersen-bot/
 │   │   ├── reflect-command.ts
 │   │   ├── summary-command.ts
 │   │   └── stats-command.ts
+│   ├── 📁 handlers/      # Centralized callback handlers
+│   │   └── callback-handler.ts
 │   ├── 📁 middleware/    # Bot middleware
 │   │   ├── user-auth.ts
 │   │   ├── error-handler.ts

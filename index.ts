@@ -13,28 +13,18 @@ import { loggingMiddleware } from "./src/middleware/logging.js";
 import { rateLimitingMiddleware } from "./src/middleware/rate-limiting.js";
 
 // Command imports
-import {
-  startCommand,
-  handleStartCallbacks,
-} from "./src/commands/start-command.js";
-import {
-  helpCommand,
-  handleHelpCallbacks,
-} from "./src/commands/help-command.js";
+import { startCommand } from "./src/commands/start-command.js";
+import { helpCommand } from "./src/commands/help-command.js";
 import {
   reflectCommand,
   handleReflectionInput,
-  handleReflectionCallbacks,
   isUserWaitingForReflection,
 } from "./src/commands/reflect-command.js";
-import {
-  summaryCommand,
-  handleSummaryCallbacks,
-} from "./src/commands/summary-command.js";
-import {
-  statsCommand,
-  handleStatsCallbacks,
-} from "./src/commands/stats-command.js";
+import { summaryCommand } from "./src/commands/summary-command.js";
+import { statsCommand } from "./src/commands/stats-command.js";
+
+// Handler imports
+import { handleCallbackQuery } from "./src/handlers/callback-handler.js";
 
 /**
  * Initialize Satupersen Bot
@@ -93,31 +83,7 @@ async function startBot(): Promise<void> {
     bot.command("stats", statsCommand);
 
     // Handle callback queries from inline keyboards
-    bot.on("callback_query", async (ctx) => {
-      try {
-        // Handle global callbacks first
-        if (ctx.callbackQuery && "data" in ctx.callbackQuery) {
-          const callbackData = ctx.callbackQuery.data;
-
-          // Global back_to_start handler
-          if (callbackData === "back_to_start") {
-            await ctx.answerCbQuery("Kembali ke menu utama...");
-            await startCommand(ctx);
-            return;
-          }
-        }
-
-        // Handle command-specific callbacks
-        await handleStartCallbacks(ctx);
-        await handleHelpCallbacks(ctx);
-        await handleReflectionCallbacks(ctx);
-        await handleSummaryCallbacks(ctx);
-        await handleStatsCallbacks(ctx);
-      } catch (error) {
-        console.error("❌ Error handling callback query:", error);
-        await ctx.answerCbQuery("Terjadi kesalahan, silakan coba lagi");
-      }
-    });
+    bot.on("callback_query", handleCallbackQuery);
 
     // Handle text messages for reflection input
     bot.on("text", async (ctx) => {

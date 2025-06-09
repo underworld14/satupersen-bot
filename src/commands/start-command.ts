@@ -63,38 +63,3 @@ Mari lanjutkan perjalanan menuju versi terbaik dari diri Anda! 🚀`;
     );
   }
 }
-
-/**
- * Handle inline keyboard callbacks for start command
- */
-export async function handleStartCallbacks(ctx: BotContext): Promise<void> {
-  if (!ctx.callbackQuery || !("data" in ctx.callbackQuery)) {
-    return;
-  }
-
-  const callbackData = ctx.callbackQuery.data;
-
-  try {
-    switch (callbackData) {
-      case "start_reflection":
-        await ctx.answerCbQuery("Memulai refleksi...");
-        // Call reflect command directly
-        const { reflectCommand } = await import("./reflect-command.js");
-        await reflectCommand(ctx);
-        break;
-
-      case "show_help":
-        await ctx.answerCbQuery("Menampilkan panduan...");
-        // Call help command directly
-        const { helpCommand } = await import("./help-command.js");
-        await helpCommand(ctx);
-        break;
-
-      default:
-        await ctx.answerCbQuery("Perintah tidak dikenali");
-    }
-  } catch (error) {
-    console.error("Error handling start callback:", error);
-    await ctx.answerCbQuery("Terjadi kesalahan, silakan coba lagi");
-  }
-}

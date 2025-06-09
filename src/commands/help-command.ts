@@ -142,38 +142,3 @@ Ketik /reflect untuk memulai refleksi harian Anda!`;
     }
   }
 }
-
-/**
- * Handle inline keyboard callbacks for help command
- */
-export async function handleHelpCallbacks(ctx: BotContext): Promise<void> {
-  if (!ctx.callbackQuery || !("data" in ctx.callbackQuery)) {
-    return;
-  }
-
-  const callbackData = ctx.callbackQuery.data;
-
-  try {
-    switch (callbackData) {
-      case "start_reflection":
-        await ctx.answerCbQuery("Memulai refleksi...");
-        // Call reflect command directly
-        const { reflectCommand } = await import("./reflect-command.js");
-        await reflectCommand(ctx);
-        break;
-
-      case "show_stats":
-        await ctx.answerCbQuery("Menampilkan statistik...");
-        // Call stats command directly
-        const { statsCommand } = await import("./stats-command.js");
-        await statsCommand(ctx);
-        break;
-
-      default:
-        await ctx.answerCbQuery("Perintah tidak dikenali");
-    }
-  } catch (error) {
-    console.error("Error handling help callback:", error);
-    await ctx.answerCbQuery("Terjadi kesalahan, silakan coba lagi");
-  }
-}

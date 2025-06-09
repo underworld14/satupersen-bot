@@ -205,100 +205,25 @@ export async function handleReflectionInput(ctx: BotContext): Promise<void> {
 }
 
 /**
- * Handle reflection-related callbacks
+ * Cancels the current reflection flow for a user.
+ * Deletes the user's session and sends a confirmation message.
+ * @param ctx - The bot context.
  */
-export async function handleReflectionCallbacks(
-  ctx: BotContext
-): Promise<void> {
-  if (!ctx.callbackQuery || !("data" in ctx.callbackQuery)) {
-    return;
+export async function cancelReflection(ctx: BotContext): Promise<void> {
+  if (ctx.user) {
+    userSessions.delete(ctx.user.telegramId);
   }
-
-  const callbackData = ctx.callbackQuery.data;
-
-  try {
-    switch (callbackData) {
-      case "start_reflection":
-        await ctx.answerCbQuery("Memulai refleksi...");
-        await reflectCommand(ctx);
-        break;
-
-      case "cancel_reflection":
-        if (ctx.user) {
-          userSessions.delete(ctx.user.telegramId);
-        }
-        await ctx.answerCbQuery("Refleksi dibatalkan");
-        await ctx.reply(
-          "👋 Oke, refleksi dibatalkan.\n\nTenang aja, kamu bisa mulai lagi kapan saja dengan /reflect!",
-          {
-            reply_markup: {
-              inline_keyboard: [
-                [{ text: "🏠 Menu Utama", callback_data: "back_to_start" }],
-              ],
-            },
-          }
-        );
-        break;
-
-      case "show_summary":
-        await ctx.answerCbQuery("Menampilkan ringkasan...");
-        // Call summary command directly to avoid import issues
-        await ctx.reply(
-          "📊 *Ringkasan Refleksi Hari Ini*\n\nGunakan /summary untuk melihat detail lengkap refleksi Anda.",
-          {
-            parse_mode: "Markdown",
-            reply_markup: {
-              inline_keyboard: [
-                [{ text: "🏠 Menu Utama", callback_data: "back_to_start" }],
-              ],
-            },
-          }
-        );
-        break;
-
-      case "show_summary":
-        await ctx.answerCbQuery("Menampilkan ringkasan...");
-        // Call summary command directly to avoid import issues
-        await ctx.reply(
-          "📊 *Ringkasan Refleksi Hari Ini*\n\nGunakan /summary untuk melihat detail lengkap refleksi Anda.",
-          {
-            parse_mode: "Markdown",
-            reply_markup: {
-              inline_keyboard: [
-                [{ text: "🏠 Menu Utama", callback_data: "back_to_start" }],
-              ],
-            },
-          }
-        );
-        break;
-
-      case "show_summary":
-        await ctx.answerCbQuery("Menampilkan ringkasan...");
-        // Call summary command directly to avoid import issues
-        await ctx.reply(
-          "📊 *Ringkasan Refleksi Hari Ini*\n\nGunakan /summary untuk melihat detail lengkap refleksi Anda.",
-          {
-            parse_mode: "Markdown",
-            reply_markup: {
-              inline_keyboard: [
-                [{ text: "🏠 Menu Utama", callback_data: "back_to_start" }],
-              ],
-            },
-          }
-        );
-        break;
-
-      case "show_stats":
-        await ctx.answerCbQuery("Menampilkan statistik...");
-        // Call stats command directly
-        const { statsCommand } = await import("./stats-command.js");
-        await statsCommand(ctx);
-        break;
+  await ctx.answerCbQuery("Refleksi dibatalkan");
+  await ctx.reply(
+    "👋 Oke, refleksi dibatalkan.\n\nTenang aja, kamu bisa mulai lagi kapan saja dengan /reflect!",
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "🏠 Menu Utama", callback_data: "back_to_start" }],
+        ],
+      },
     }
-  } catch (error) {
-    console.error("Error handling reflection callback:", error);
-    await ctx.answerCbQuery("Terjadi kesalahan, silakan coba lagi");
-  }
+  );
 }
 
 /**
