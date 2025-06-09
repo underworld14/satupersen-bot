@@ -279,30 +279,9 @@ bun test:watch          # Run tests in watch mode
 
 ## 🐳 Deployment
 
-### GitHub Container Registry (Automated CI/CD)
-
-The project includes automated CI/CD pipeline that builds and publishes Docker images to GitHub Container Registry.
-
-**🔄 Automatic Deployment:**
-
-- Every push to `main` branch triggers the CI/CD pipeline
-- Runs tests, security scans, and builds multi-architecture Docker images
-- Publishes to `ghcr.io/underworld14/satupersen-bot`
-- Available tags: `latest`, date-based, and commit SHA tags
-
-**📥 Using Pre-built Images:**
-
-```bash
-# Pull latest image
-docker pull ghcr.io/underworld14/satupersen-bot:latest
-
-# Run with pre-built image
-SATUPERSEN_IMAGE=ghcr.io/underworld14/satupersen-bot:latest docker-compose up -d
-```
-
 ### Docker Deployment
 
-1. **Build image locally**
+1. **Build image**
 
 ```bash
 docker build -t satupersen-bot .
@@ -321,26 +300,7 @@ docker-compose logs -f
 docker-compose down
 ```
 
-3. **Production deployment script**
-
-```bash
-# Deploy latest version
-./scripts/deploy.sh
-
-# Deploy specific version
-./scripts/deploy.sh --tag v1.2.3
-
-# Deploy with backup
-./scripts/deploy.sh --backup --pull
-
-# Rollback to previous version
-./scripts/deploy.sh --rollback
-
-# Check deployment status
-./scripts/deploy.sh --status
-```
-
-4. **Environment for production**
+3. **Environment for production**
 
 ```env
 NODE_ENV=production
