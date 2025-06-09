@@ -48,17 +48,17 @@ export function generateMotivationalSummaryPrompt(
   period: "weekly" | "monthly",
   reflectionsSample?: string // Optional: a small sample of recent reflections text
 ): string {
-  const {
-    totalDays,
-    reflectionCount,
-    averageWordsPerDay,
-    mostActiveDay,
-  } = stats;
+  const { totalDays, totalReflections, averageWordCount, mostActiveDay } =
+    stats;
   const consistency =
-    totalDays > 0 ? Math.round((reflectionCount / totalDays) * 100) : 0;
+    totalDays > 0 ? Math.round((totalReflections / totalDays) * 100) : 0;
 
   let themesText = themes;
-  if (!themes || themes.toLowerCase().includes("tidak ada tema") || themes.toLowerCase().includes("belum cukup data")) {
+  if (
+    !themes ||
+    themes.toLowerCase().includes("tidak ada tema") ||
+    themes.toLowerCase().includes("belum cukup data")
+  ) {
     themesText = "belum ada tema spesifik yang teridentifikasi kali ini";
   }
 
@@ -69,8 +69,8 @@ Tugas Anda adalah membuat ringkasan motivasi yang personal dan membangkitkan sem
 
 Data Pengguna:
 - Periode Analisis: ${totalDays} hari
-- Jumlah Refleksi: ${reflectionCount} dari ${totalDays} hari (${consistency}%)
-- Rata-rata Kata per Refleksi: ${averageWordsPerDay} kata
+- Jumlah Refleksi: ${totalReflections} dari ${totalDays} hari (${consistency}%)
+- Rata-rata Kata per Refleksi: ${averageWordCount} kata
 - Hari Paling Aktif: ${mostActiveDay || "Belum ada"}
 - Tema Umum yang Teridentifikasi: ${themesText}
 ${
@@ -109,7 +109,8 @@ Ringkasan Motivasi Personal:`;
  * Generate prompt for theme analysis from a block of reflections
  */
 export function generateThemeAnalysisPrompt(reflectionsText: string): string {
-  if (!reflectionsText || reflectionsText.trim().length < 50) { // Basic check for minimal content
+  if (!reflectionsText || reflectionsText.trim().length < 50) {
+    // Basic check for minimal content
     return ""; // Or throw an error, indicating not enough text for analysis
   }
 
