@@ -42,7 +42,7 @@ Satupersen adalah Telegram bot canggih yang membantu pengguna melakukan refleksi
 1. **Clone repository**
 
 ```bash
-git clone https://github.com/yourusername/satupersen-bot.git
+git clone https://github.com/underworld14/satupersen-bot.git
 cd satupersen-bot
 ```
 
@@ -394,118 +394,11 @@ pm2 restart satupersen-bot
 - **Data Minimization** - Only essential user data is stored
 - **Secure Storage** - PostgreSQL with proper indexing and relationships
 - **No Logging of Personal Content** - Reflections are not logged in application logs
-- **GDPR Compliance Ready** - User data export and deletion capabilities
-
-## 📚 API Documentation
-
-### Core Services
-
-#### ReflectionService
-
-```typescript
-class ReflectionService {
-  async createReflection(userId: string, input: string): Promise<Reflection>;
-  async getLastReflections(
-    userId: string,
-    limit: number
-  ): Promise<Reflection[]>;
-  async getTodayReflection(userId: string): Promise<Reflection | null>;
-  async getReflectionsByDateRange(
-    userId: string,
-    start: Date,
-    end: Date
-  ): Promise<Reflection[]>;
-}
-```
-
-#### AnalyticsService
-
-```typescript
-class AnalyticsService {
-  async getWeeklyStats(userId: string): Promise<WeeklyStats>;
-  async getMonthlyStats(userId: string): Promise<MonthlyStats>;
-  async calculateMoodTrend(userId: string, days: number): Promise<MoodTrend>;
-  async getReflectionFrequency(userId: string): Promise<FrequencyStats>;
-}
-```
-
-#### UserService
-
-```typescript
-class UserService {
-  async getOrCreateUser(
-    telegramId: string,
-    userData: TelegramUser
-  ): Promise<User>;
-  async updateUser(userId: string, data: Partial<User>): Promise<User>;
-  async getUserById(userId: string): Promise<User | null>;
-}
-```
-
-## 📈 Performance
-
-### Optimization Features
-
-- **Database Indexing** - Optimized queries with proper indexes
-- **Connection Pooling** - Efficient database connection management
-- **Caching Strategy** - In-memory caching for frequently accessed data
-- **Lazy Loading** - On-demand loading of related data
-- **Batch Processing** - Efficient bulk operations where applicable
-
-### Performance Metrics
-
-- **Response Time** - < 2s for reflection analysis
-- **Throughput** - Supports 100+ concurrent users
-- **Memory Usage** - < 512MB RAM in production
-- **Database Queries** - Optimized with < 5 queries per request
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-**Bot not responding**
-
-```bash
-# Check bot status
-pm2 status satupersen-bot
-
-# Check logs
-pm2 logs satupersen-bot --lines 50
-```
-
-**Database connection issues**
-
-```bash
-# Test database connectivity
-bun run src/utils/test-db-connection.ts
-
-# Check database status
-sudo systemctl status postgresql
-```
-
-**AI API errors**
-
-```bash
-# Test AI connection
-bun run src/utils/test-ai-integration.ts
-
-# Verify API key
-echo $GOOGLE_API_KEY
-```
-
-### Debug Mode
-
-Enable debug logging:
-
-```env
-NODE_ENV=development
-DEBUG=true
-```
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/satupersen-bot/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/satupersen-bot/discussions)
+- **Issues**: [GitHub Issues](https://github.com/underworld14/satupersen-bot/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/underworld14/satupersen-bot/discussions)
 - **Email**: support@satupersen.com
 - **Telegram**: [@satupersen_support](https://t.me/satupersen_support)
 
@@ -527,6 +420,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ for personal growth and daily reflection**
 
-[🌱 Start your 1% daily growth journey today](https://t.me/your_bot_username)
+[🌱 Start your 1% daily growth journey today](https://t.me/satupersen_bot)
 
 </div>
