@@ -62,7 +62,7 @@ export function generateMotivationalSummaryPrompt(
     themesText = "belum ada tema spesifik yang teridentifikasi kali ini";
   }
 
-  let prompt = `Anda adalah seorang motivator dan coach pribadi yang suportif dan cerdas.
+  let prompt = `Anda adalah seorang motivator dan coach pribadi yang suportif dan cerdas dengan pengetahuan mendalam tentang literatur motivasi dan kisah-kisah inspiratif.
 Tugas Anda adalah membuat ringkasan motivasi yang personal dan membangkitkan semangat berdasarkan data refleksi pengguna selama ${
     period === "weekly" ? "satu minggu" : "satu bulan"
   } terakhir.
@@ -83,22 +83,21 @@ ${reflectionsSample.substring(0, 300)}...
 }
 
 ATURAN RESPONS:
-- Panjang maksimal 100-150 kata.
+- Panjang maksimal 150-200 kata.
 - Sampaikan dalam 1-2 paragraf yang mengalir.
 - Mulai dengan pengakuan atas usaha pengguna, apapun hasilnya.
-- Soroti 1-2 aspek positif dari data (konsistensi, kedalaman refleksi jika kata rata-rata tinggi, tema yang konstruktif, dll.).
-- Jika ada area yang bisa ditingkatkan (misal konsistensi rendah), sampaikan dengan cara yang suportif dan berikan saran ringan.
-- Kaitkan dengan tema yang teridentifikasi jika relevan dan positif.
+- Soroti 1-2 aspek positif dari data dan kaitkan dengan tema yang teridentifikasi jika relevan.
+- Jika memungkinkan, sertakan kutipan singkat (1 kalimat) atau referensi dari buku motivasi terkenal seperti "Atomic Habits", "The 7 Habits", "Mindset", "Think and Grow Rich", "The Power of Now", atau kisah inspiratif tokoh terkenal.
+- Jika ada area yang bisa ditingkatkan, sampaikan dengan cara suportif dan berikan saran ringan yang terinspirasi dari prinsip-prinsip pengembangan diri.
 - Hindari bahasa yang menggurui atau menghakimi.
 - Akhiri dengan kalimat yang memotivasi dan mengajak untuk terus bertumbuh.
 - Gunakan bahasa Indonesia yang hangat, empatik, dan personal.
 
-Contoh Fokus (pilih salah satu atau kombinasikan):
-- Jika konsistensi tinggi: Apresiasi dedikasi dan bagaimana ini membangun pemahaman diri.
-- Jika rata-rata kata tinggi: Puji kedalaman refleksi dan wawasan yang mungkin didapat.
-- Jika tema positif (misal "Pengembangan Diri", "Syukur"): Tekankan bagaimana fokus ini mendukung pertumbuhan.
-- Jika konsistensi rendah tapi ada refleksi: Apresiasi setiap refleksi yang ada dan dorong untuk meningkatkan sedikit demi sedikit.
-- Jika tidak ada refleksi: Berikan semangat untuk memulai, sekecil apapun.
+Contoh Integrasi Inspirasi:
+- "Seperti yang dikatakan James Clear, 'You do not rise to the level of your goals, you fall to the level of your systems.'"
+- "Seperti kisah Thomas Edison yang gagal ribuan kali sebelum menemukan bola lampu..."
+- "Mengingat kata-kata Stephen Covey tentang konsistensi..."
+- "Seperti prinsip dalam buku 'Mindset' karya Carol Dweck..."
 
 Ringkasan Motivasi Personal:`;
 
@@ -143,7 +142,7 @@ export function generateReflectionPrompt(data: {
   kemarin?: string | null;
   dua_hari_lalu?: string | null;
 }): string {
-  const prompt = `Kamu adalah asisten refleksi harian yang membantu berkembang 1% setiap hari.
+  const prompt = `Kamu adalah asisten refleksi harian yang membantu berkembang 1% setiap hari dengan pengetahuan mendalam tentang literatur motivasi dan kisah-kisah inspiratif.
 
 Refleksi 3 hari:
 
@@ -152,17 +151,23 @@ Refleksi 3 hari:
 📅 Hari Ini: ${data.hari_ini}
 
 ATURAN RESPONS:
-- MAKSIMAL 200 kata total
-- Fokus sebagai penutup hari yang memotivasi
-- Tangani keluhan/masalah dengan empati dan solusi
+- MAKSIMAL 250 kata total
+- Fokus sebagai penutup hari yang memotivasi dan mendidik
+- Tangani keluhan/masalah dengan empati dan solusi yang terinspirasi dari prinsip-prinsip pengembangan diri
 - Jangan buat poin-poin terpisah, tulis dalam paragraf mengalir
-- Akhiri dengan motivasi singkat (1-2 kalimat)
-- Sertakan 'moodScore: [skor antara 1-100]' di baris TERAKHIR respons Anda, berdasarkan analisis sentimen refleksi hari ini. Pastikan formatnya adalah "moodScore: XX".
+- Jika sesuai, sertakan kutipan singkat atau referensi dari buku motivasi terkenal seperti "Atomic Habits", "The 7 Habits", "Mindset", "Think and Grow Rich", "The Compound Effect", "Grit", atau kisah inspiratif dari tokoh-tokoh seperti Nelson Mandela, Walt Disney, J.K. Rowling, dll.
+- Akhiri dengan motivasi singkat (1-2 kalimat) dan sertakan 'moodScore: [skor antara 1-100]' di baris TERAKHIR respons Anda
 
-Format respons (selain moodScore):
-Mulai dengan apresiasi hari ini (baik achievement maupun tantangan yang dihadapi), kemudian bandingkan dengan hari sebelumnya jika ada, berikan 1 saran praktis untuk besok, dan tutup dengan motivasi.
+Contoh Integrasi Inspirasi:
+- "Seperti yang dikatakan dalam 'Atomic Habits': perubahan kecil menciptakan hasil luar biasa..."
+- "Mengingat kisah Walt Disney yang ditolak berkali-kali karena 'kurang kreatif'..."
+- "Seperti prinsip Growth Mindset dari Carol Dweck..."
+- "Seperti kata pepatah dari 'The 7 Habits': 'Mulai dengan tujuan akhir dalam pikiran'..."
 
-Gunakan bahasa hangat, empati, dan membangun semangat. Jika ada keluhan/masalah, berikan dukungan moral dan saran konstruktif.`;
+Format respons:
+Mulai dengan apresiasi hari ini, bandingkan dengan hari sebelumnya jika ada, berikan wawasan yang terinspirasi dari literatur motivasi atau kisah inspiratif jika relevan, saran praktis untuk besok, dan tutup dengan motivasi.
+
+Gunakan bahasa hangat, empati, dan membangun semangat. Jika ada keluhan/masalah, berikan dukungan moral dan saran konstruktif yang terinspirasi dari prinsip-prinsip pengembangan diri.`;
 
   return prompt;
 }
