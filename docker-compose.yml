@@ -28,6 +28,7 @@ services:
 
   # Satupersen Bot Service
   bot:
+    image: ${SATUPERSEN_IMAGE:-ghcr.io/underworld14/satupersen-bot:latest}
     build:
       context: .
       dockerfile: Dockerfile
