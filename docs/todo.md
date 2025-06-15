@@ -1,8 +1,8 @@
 # 📋 Satupersen Bot Development Todo
 
-## 🚀 Phase 1: Core Setup & Infrastructure
+## 🚀 Phase 1: Core Bot Development
 
-### Environment & Configuration
+### Task 1: Environment & Configuration Setup
 
 - [x] Set up environment variables in `.env`
   - [x] `GOOGLE_AI_MODEL_NAME=gemini-1.5-flash`
@@ -12,7 +12,7 @@
 - [x] Create environment validation utility ✅ (Completed: 2025-01-03)
 - [x] Add `.env.example` file for reference ✅ (Completed: 2025-01-03)
 
-### Database Setup
+### Task 2: Database Setup
 
 - [x] Complete Prisma schema setup ✅ (Completed: 2025-01-03)
   - [x] User model (already exists)
@@ -23,7 +23,7 @@
 - [x] Create database migration files ✅ (Completed: 2025-01-03)
 - [x] Test database connection ✅ (Completed: 2025-01-03)
 
-### Project Structure
+### Task 3: Project Structure
 
 - [x] Create folder structure: ✅ (Completed: 2025-01-03)
   - [x] `src/commands/` - Bot command handlers
@@ -33,9 +33,7 @@
   - [x] `src/utils/` - Helper functions
 - [x] Set up main bot initialization (`src/index.ts`) ✅ (Completed: 2025-01-03)
 
-## 🤖 Phase 2: Bot Core Features
-
-### Bot Context & Middleware
+### Task 4: Bot Context & Middleware
 
 - [x] Create custom BotContext interface with Prisma client ✅ (Completed: 2025-01-03)
 - [x] Implement user authentication middleware ✅ (Completed: 2025-01-03)
@@ -43,14 +41,14 @@
 - [x] Create logging middleware ✅ (Completed: 2025-01-03)
 - [x] Implement rate limiting middleware ✅ (Completed: 2025-01-03)
 
-### User Management
+### Task 5: User Management
 
 - [x] Create user service (`src/services/user-service.ts`) ✅ (Completed: 2025-01-03)
 - [x] Implement `getOrCreateUser()` function ✅ (Completed: 2025-01-03)
 - [x] Add user registration flow ✅ (Completed: 2025-01-03)
 - [x] Handle user data validation ✅ (Completed: 2025-01-03)
 
-### Basic Commands
+### Task 6: Basic Commands
 
 - [x] `/start` command ✅ (Completed: 2025-01-03)
   - [x] Welcome message
@@ -61,9 +59,7 @@
   - [x] Usage examples
   - [x] Quick start guide
 
-## 🧠 Phase 3: Reflection System
-
-### AI Integration
+### Task 7: AI Integration
 
 - [x] Set up Google Generative AI client (`src/utils/ai-client.ts`) ✅ (Completed: 2025-01-03)
 - [x] Create prompt generation utility ✅ (Completed: 2025-01-03)
@@ -71,7 +67,7 @@
 - [x] Add error handling for AI API calls ✅ (Completed: 2025-01-03)
 - [x] Test AI integration with sample data ✅ (Completed: 2025-01-03)
 
-### Reflection Commands
+### Task 8: Reflection System
 
 - [x] `/reflect` command implementation ✅ (Completed: 2025-01-03)
   - [x] Input collection flow ✅ (Completed: 2025-01-03)
@@ -85,7 +81,7 @@
   - [x] Format and display summary ✅ (Completed: 2025-01-03)
   - [x] Handle cases when no reflection exists ✅ (Completed: 2025-01-03)
 
-### Reflection Service
+### Task 9: Reflection Service
 
 - [x] Create reflection service (`src/services/reflection-service.ts`) ✅ (Completed: 2025-01-03)
 - [x] Implement `getLastReflections()` function ✅ (Completed: 2025-01-03)
@@ -93,9 +89,7 @@
 - [x] Implement reflection retrieval by date ✅ (Completed: 2025-01-03)
 - [x] Add input validation and sanitization ✅ (Completed: 2025-01-03)
 
-## 📊 Phase 4: Statistics & Analytics
-
-### Stats Command
+### Task 10: Statistics & Analytics
 
 - [x] `/stats` command implementation ✅ (Completed: 2025-01-03)
 - [x] Weekly statistics (7 days) ✅ (Completed: 2025-01-03)
@@ -104,7 +98,7 @@
 - [x] Identify common themes/topics ✅
 - [x] Generate motivational summary ✅
 
-### Analytics Service
+### Task 11: Analytics Service
 
 - [x] Create analytics service (`src/services/analytics-service.ts`) ✅
 - [x] Implement reflection counting ✅
@@ -112,7 +106,7 @@
 - [x] Create performance metrics ✅
 - [x] Generate insights and recommendations ✅
 
-### 🧠 moodScore Implementation (100%)
+### Task 12: moodScore Implementation
 
 - [x] **Database Schema for `moodScore`**:
   - [x] Add `moodScore Int?` to `Reflection` model in `prisma/schema.prisma`.
@@ -129,46 +123,209 @@
   - [x] `/summary`: Display daily `moodScore`.
 - [x] **Enhanced AI Context**:
   - [x] Modify AI interaction logic (e.g., in `ai-client.ts` or related services) to use weekly/monthly average `moodScore` for better AI understanding.
-    - *Note: Average `moodScore` (weekly/monthly) is calculable via `AnalyticsService`. Decided against sending this to the current reflection AI prompt (which *generates* daily `moodScore`) to avoid circular reasoning. This average score is available for future, distinct AI interactions.*
 - [x] **Testing**:
   - [x] Unit test `moodScore` extraction.
   - [x] Unit test `moodScore` analytics (average, trend).
   - [x] Test `moodScore` display in `/stats` and `/summary` (conceptual, core logic tested in services).
 
-## 🎨 Phase 5: User Experience & Polish
+## 🧠 Phase 2: Enhanced Habit Psychology Integration
 
-### Message Formatting
+### Database Schema Enhancements
 
-- [ ] Create message formatting utilities
-- [ ] Implement Telegram Markdown/HTML formatting
-- [ ] Add emoji support for better UX
-- [ ] Create consistent message templates
-- [ ] Add Indonesian language localization
+- [ ] **Streak & Milestone Schema Updates**
 
-### Error Handling & Validation
+  - [ ] Add `currentStreak Int @default(0)` to User model
+  - [ ] Add `longestStreak Int @default(0)` to User model
+  - [ ] Add `lastActive DateTime?` to User model
+  - [ ] Add `milestones Json @default("{}")` to User model (store {3d: bool, 7d: bool, 21d: bool, 66d: bool})
+  - [ ] Add `habitPrefs String[] @default([])` to User model (store user preferences)
+  - [ ] Generate and apply database migration
+  - [ ] Update User type definitions in `src/types/`
 
-- [ ] Comprehensive input validation
-- [ ] User-friendly error messages
-- [ ] API error handling (Telegram, AI, Database)
-- [ ] Graceful degradation for service outages
-- [ ] Logging and monitoring setup
+- [ ] **Habit Tracking Schema**
+  - [ ] Add `habitStackingSuggestion String?` to Reflection model
+  - [ ] Add `streakDay Int @default(0)` to Reflection model (day number in current streak)
+  - [ ] Update Reflection type definitions
 
-### Session Management
+### Streak System Implementation
 
-- [ ] Implement conversation state management
-- [ ] Handle multi-step interactions
-- [ ] Add timeout handling for conversations
-- [ ] Implement conversation cancellation
+- [ ] **Streak Service (`src/services/streak-service.ts`)**
 
-## 🔧 Phase 6: Advanced Features & Optimization
+  - [ ] Create `StreakService` class
+  - [ ] Implement `updateStreak(userId: string)` method
+  - [ ] Implement `getStreakData(userId: string)` method
+  - [ ] Implement `checkStreakMaintenance()` method
+  - [ ] Add streak forgiveness logic (1 day missed per week)
+  - [ ] Add streak reset and recovery functions
+  - [ ] Create comprehensive unit tests
 
-### Performance Optimization
+- [ ] **Streak Middleware Integration**
+  - [ ] Add streak update to reflection creation flow
+  - [ ] Update user's `lastActive` timestamp on bot interaction
+  - [ ] Implement streak maintenance checks
+  - [ ] Add streak data to bot context
 
-- [ ] Database query optimization
-- [ ] Connection pooling setup
-- [ ] Caching for frequently accessed data
-- [ ] Rate limiting implementation
-- [ ] Memory usage optimization
+### Milestone System
+
+- [ ] **Milestone Service (`src/services/milestone-service.ts`)**
+
+  - [ ] Create `MilestoneService` class
+  - [ ] Implement milestone detection (3d, 7d, 21d, 66d)
+  - [ ] Create milestone celebration messages
+  - [ ] Add milestone achievement tracking
+  - [ ] Implement milestone badge system
+  - [ ] Create milestone notification system
+  - [ ] Add comprehensive unit tests
+
+- [ ] **Milestone Integration**
+  - [ ] Add milestone checks to reflection workflow
+  - [ ] Create milestone celebration UI/UX
+  - [ ] Add milestone display in `/stats` command
+  - [ ] Implement milestone-based motivational messages
+
+### Habit Stacking System
+
+- [ ] **Habit Analysis Service (`src/services/habit-analysis-service.ts`)**
+
+  - [ ] Create `HabitAnalysisService` class
+  - [ ] Implement habit pattern recognition from reflections
+  - [ ] Add anchor habit identification
+  - [ ] Create habit stacking suggestion generator
+  - [ ] Implement habit preference learning
+  - [ ] Add habit success tracking
+  - [ ] Create comprehensive unit tests
+
+- [ ] **AI-Powered Habit Suggestions**
+  - [ ] Create habit stacking prompt templates
+  - [ ] Implement AI-powered habit analysis
+  - [ ] Add habit suggestion validation
+  - [ ] Create habit recommendation engine
+  - [ ] Implement feedback collection system
+
+### Progress Visualization Engine
+
+- [ ] **Progress Service (`src/services/progress-service.ts`)**
+
+  - [ ] Create `ProgressService` class
+  - [ ] Implement "1% better" cumulative progress calculation
+  - [ ] Add comparative timeline analysis
+  - [ ] Create habit maturity meter (54/66 days)
+  - [ ] Implement progress visualization data
+  - [ ] Add progress trend analysis
+  - [ ] Create comprehensive unit tests
+
+- [ ] **Enhanced Statistics**
+  - [ ] Add streak visualization to `/stats` command
+  - [ ] Implement calendar visual with emoji indicators
+  - [ ] Add habit maturity progress bars
+  - [ ] Create comparative progress metrics
+  - [ ] Implement "1% better" progress tracking
+
+### New Bot Commands
+
+- [ ] **`/streak` Command (`src/commands/streak-command.ts`)**
+
+  - [ ] Create streak command handler
+  - [ ] Display current streak information
+  - [ ] Show streak calendar visualization
+  - [ ] Add streak recovery guidance
+  - [ ] Implement streak motivation messages
+
+- [ ] **`/habits` Command (`src/commands/habits-command.ts`)**
+
+  - [ ] Create habits command handler
+  - [ ] Display habit stacking suggestions
+  - [ ] Show habit preference settings
+  - [ ] Add habit tracking interface
+  - [ ] Implement habit feedback system
+
+- [ ] **`/progress` Command (`src/commands/progress-command.ts`)**
+  - [ ] Create progress command handler
+  - [ ] Show "1% better" cumulative progress
+  - [ ] Display habit maturity meters
+  - [ ] Add comparative timeline
+  - [ ] Implement progress celebration
+
+### Enhanced AI Integration
+
+- [ ] **Habit-Aware AI Prompts**
+
+  - [ ] Update reflection AI prompts with habit context
+  - [ ] Add habit stacking suggestions to AI responses
+  - [ ] Implement milestone-aware AI interactions
+  - [ ] Create habit-focused motivational messages
+  - [ ] Add progress-aware AI feedback
+
+- [ ] **AI Prompt Templates**
+  - [ ] Create habit analysis prompt templates
+  - [ ] Add habit stacking suggestion prompts
+  - [ ] Implement milestone celebration prompts
+  - [ ] Create progress-focused AI prompts
+
+### Notification System
+
+- [ ] **Reminder Service (`src/services/reminder-service.ts`)**
+
+  - [ ] Create `ReminderService` class
+  - [ ] Implement daily reflection reminders (8 PM)
+  - [ ] Add streak maintenance notifications
+  - [ ] Create milestone celebration alerts
+  - [ ] Implement habit stacking reminders
+  - [ ] Add user preference management
+
+- [ ] **Notification Middleware**
+  - [ ] Create notification scheduling system
+  - [ ] Add user timezone handling
+  - [ ] Implement notification preferences
+  - [ ] Add notification rate limiting
+
+### Enhanced User Experience
+
+- [ ] **Inline Keyboards & UI**
+
+  - [ ] Create habit stacking feedback buttons (👍/👎)
+  - [ ] Add streak celebration interactive elements
+  - [ ] Implement milestone badge displays
+  - [ ] Create progress visualization interfaces
+  - [ ] Add habit preference selection menus
+
+- [ ] **Personalization Features**
+  - [ ] Add user habit preference learning
+  - [ ] Implement personalized milestone messages
+  - [ ] Create adaptive habit suggestions
+  - [ ] Add user-specific progress metrics
+
+### Testing & Quality Assurance
+
+- [ ] **Unit Tests**
+
+  - [ ] Test streak calculation logic
+  - [ ] Test milestone detection algorithms
+  - [ ] Test habit analysis accuracy
+  - [ ] Test progress calculation methods
+  - [ ] Test notification scheduling
+
+- [ ] **Integration Tests**
+  - [ ] Test complete habit stacking workflow
+  - [ ] Test streak maintenance across days
+  - [ ] Test milestone celebration flow
+  - [ ] Test progress visualization generation
+
+### Performance & Optimization
+
+- [ ] **Database Optimization**
+
+  - [ ] Add indexes for streak queries
+  - [ ] Optimize habit analysis queries
+  - [ ] Add caching for progress calculations
+  - [ ] Implement efficient milestone checking
+
+- [ ] **Memory Management**
+  - [ ] Optimize streak data storage
+  - [ ] Efficient habit pattern caching
+  - [ ] Minimize AI API calls for habit analysis
+
+## 🔧 Phase 3: Advanced Features & Optimization
 
 ### Additional Features
 
@@ -178,15 +335,7 @@
 - [ ] Reflection streaks tracking
 - [ ] Personal growth metrics
 
-### Security & Privacy
-
-- [ ] Input sanitization
-- [ ] Data encryption for sensitive information
-- [ ] User data privacy compliance
-- [ ] Secure API key management
-- [ ] Bot token security
-
-## 🚀 Phase 7: Deployment & Monitoring
+## 🚀 Phase 4: Deployment & Monitoring
 
 ### Deployment Setup
 
@@ -227,49 +376,35 @@
 - [x] Production-ready Dockerfile ✅ (Completed: 2025-01-08)
 - [x] Environment configuration template ✅ (Completed: 2025-01-08)
 
-### Maintenance
-
-- [ ] Regular dependency updates
-- [ ] Security patches
-- [ ] Performance optimization
-- [ ] Feature requests evaluation
-- [ ] Bug fixes and improvements
-
 ## 🎯 Current Priority Focus
 
-**Phase 3 ✅ COMPLETED!**
+**Phase 1 ✅ COMPLETED!**
 
-**Next: Phase 4 - Statistics & Analytics** should be the next focus:
+**Next: Phase 2 - Enhanced Habit Psychology Integration** should be the next focus:
 
-1. ✅ Database connection and basic bot setup
-2. ✅ User management and authentication
-3. ✅ Basic commands (`/start`, `/help`)
-4. ✅ Core reflection flow (`/reflect`) with AI integration
-5. ✅ Summary and basic statistics commands
-6. 🎯 **NEXT:** Advanced analytics and reporting features
+**Phase 1 Achievements (All 12 Tasks Complete):**
 
-**Phase 3 Achievements:**
+- ✅ **Tasks 1-3:** Complete infrastructure and project setup
+- ✅ **Tasks 4-6:** Bot core features, middleware, and user management
+- ✅ **Tasks 7-9:** AI-powered reflection system with 3-day context
+- ✅ **Tasks 10-12:** Statistics, analytics, and moodScore implementation
 
-- ✅ Google Generative AI integration with latest @google/genai SDK
-- ✅ Complete reflection workflow with AI analysis
-- ✅ 3-day context prompts for better insights
-- ✅ Input validation and sanitization
-- ✅ Professional `/reflect`, `/summary`, and `/stats` commands
-- ✅ Session management for reflection input
-- ✅ Error handling for AI API calls
-- ✅ Database integration with Reflection model
+**Phase 2 Target:** 40% user retention increase in 60 days through:
+
+- Streak visualization and maintenance
+- Micro-milestone celebrations (3d, 7d, 21d, 66d)
+- AI-powered habit stacking suggestions
+- Progress visualization with "1% better" tracking
 
 ## 📊 Progress Tracking
 
-- **Phase 1**: ✅ 100% Complete
-- **Phase 2**: ✅ 100% Complete
-- **Phase 3**: ✅ 100% Complete
-- **Phase 4**: ✅ 100% Complete
-- **Phase 5**: ⬜ 0% Complete
-- **Phase 6**: ⬜ 0% Complete
-- **Phase 7**: ⬜ 0% Complete
+- **Phase 1**: ✅ 100% Complete (Core Bot Development - 12 Tasks)
+- **Phase 2**: ⬜ 0% Complete (Habit Psychology Integration)
+- **Phase 3**: ⬜ 0% Complete (Advanced Features)
+- **Phase 4**: ⬜ 0% Complete (Deployment & Monitoring)
 
 ---
 
-_Last Updated: 2025-01-03_
+_Last Updated: 2025-01-15_
 _Next Review: Weekly_
+_Phase Structure Reorganized: 2025-01-15_
