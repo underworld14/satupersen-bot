@@ -3,7 +3,12 @@ import { env } from "./src/utils/env-validation.js";
 import { database, db } from "./src/utils/database.js";
 import { testAIConnection } from "./src/utils/ai-client.js";
 import { ReflectionService } from "./src/services/reflection-service.js";
-import { AnalyticsService } from "./src/services/analytics-service.js"; // Added import
+import { AnalyticsService } from "./src/services/analytics-service.js";
+import { StreakService } from "./src/services/streak-service.js";
+import { MilestoneService } from "./src/services/milestone-service.js";
+import { HabitAnalysisService } from "./src/services/habit-analysis-service.js";
+import { ProgressService } from "./src/services/progress-service.js";
+import { EnhancedAIService } from "./src/services/enhanced-ai-service.js";
 import type { BotContext } from "./src/types/bot-context.js";
 
 // Middleware imports
@@ -22,6 +27,12 @@ import {
 } from "./src/commands/reflect-command.js";
 import { summaryCommand } from "./src/commands/summary-command.js";
 import { statsCommand } from "./src/commands/stats-command.js";
+import { streakCommand } from "./src/commands/streak-command.js";
+import {
+  habitsCommand,
+  handleHabitFeedback,
+} from "./src/commands/habits-command.js";
+import { progressCommand } from "./src/commands/progress-command.js";
 
 // Handler imports
 import { handleCallbackQuery } from "./src/handlers/callback-handler.js";
@@ -60,7 +71,12 @@ async function startBot(): Promise<void> {
     bot.use(async (ctx, next) => {
       ctx.db = db;
       ctx.reflectionService = new ReflectionService(db);
-      ctx.analyticsService = new AnalyticsService(db); // Added service
+      ctx.analyticsService = new AnalyticsService(db);
+      ctx.streakService = new StreakService(db);
+      ctx.milestoneService = new MilestoneService(db);
+      ctx.habitAnalysisService = new HabitAnalysisService(db);
+      ctx.progressService = new ProgressService(db);
+      ctx.enhancedAIService = new EnhancedAIService(db);
       await next();
     });
 
@@ -81,9 +97,15 @@ async function startBot(): Promise<void> {
     bot.command("reflect", reflectCommand);
     bot.command("summary", summaryCommand);
     bot.command("stats", statsCommand);
+    bot.command("streak", streakCommand);
+    bot.command("habits", habitsCommand);
+    bot.command("progress", progressCommand);
 
     // Handle callback queries from inline keyboards
     bot.on("callback_query", handleCallbackQuery);
+
+    // Handle habit feedback callbacks
+    bot.action(/^habit_/, handleHabitFeedback);
 
     // Handle text messages for reflection input
     bot.on("text", async (ctx) => {
@@ -115,7 +137,7 @@ async function startBot(): Promise<void> {
     console.log("🚀 Starting Satupersen Bot...");
     await bot.launch();
 
-    console.log("✅ Satupersen Bot is running with Phase 3 features!");
+    console.log("✅ Satupersen Bot is running with Phase 2 features!");
     console.log("📋 Available features:");
     console.log("  • User authentication and registration");
     console.log("  • Rate limiting and error handling");
@@ -124,6 +146,15 @@ async function startBot(): Promise<void> {
     console.log("  • /reflect - AI-powered daily reflection");
     console.log("  • /summary - Today's reflection summary");
     console.log("  • /stats - Weekly reflection statistics");
+    console.log("  • /streak - Streak tracking and motivation");
+    console.log("  • /habits - Habit analysis and stacking suggestions");
+    console.log("  • /progress - 1% better progress tracking");
+    console.log("  • Milestone celebrations and streak recovery");
+    console.log("  • Habit psychology integration");
+    console.log("  • 🧠 Enhanced AI Integration with habit-aware prompts");
+    console.log("  • 🎯 Adaptive AI responses based on user progress");
+    console.log("  • 🎉 AI-powered milestone celebrations");
+    console.log("  • 💡 Contextual habit stacking recommendations");
     console.log("  • Inline keyboard navigation");
     console.log("  • Google Gemini AI integration");
 

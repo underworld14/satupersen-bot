@@ -95,9 +95,16 @@ export async function handleReflectionInput(ctx: BotContext): Promise<void> {
       "🤖 Lagi menganalisis refleksi kamu...\n\n✨ Sebentar ya, lagi nyiapin insight yang bagus!"
     );
 
-    // Process reflection
-    const { reflection, aiSummary } =
-      await ctx.reflectionService.createReflection(ctx.user.id, userInput);
+    // Process reflection with enhanced habit-aware AI
+    const { reflection, aiSummary, newMilestones, habitSuggestion } =
+      await ctx.reflectionService.createReflection(
+        ctx.user.id,
+        userInput,
+        ctx.streakService,
+        ctx.milestoneService,
+        ctx.habitAnalysisService,
+        ctx.progressService
+      );
 
     // Delete loading message
     try {
@@ -170,8 +177,85 @@ export async function handleReflectionInput(ctx: BotContext): Promise<void> {
       });
     }
 
+    // Send habit stacking suggestion if available
+    if (habitSuggestion) {
+      try {
+        await ctx.reply(
+          `💡 **Saran Habit Stacking:**\n\n${habitSuggestion}\n\n` +
+            "🔄 Klik tombol di bawah untuk feedback tentang saran ini:",
+          {
+            parse_mode: "Markdown",
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  { text: "👍 Berguna", callback_data: "habit_feedback_good" },
+                  {
+                    text: "👎 Kurang Sesuai",
+                    callback_data: "habit_feedback_bad",
+                  },
+                ],
+                [
+                  {
+                    text: "🎯 Lihat Lebih Banyak",
+                    callback_data: "show_more_habits",
+                  },
+                ],
+              ],
+            },
+          }
+        );
+      } catch (error) {
+        console.error("❌ Error sending habit suggestion:", error);
+      }
+    }
+
+    // Send milestone celebration messages if any new milestones were unlocked
+    if (newMilestones && newMilestones.length > 0) {
+      for (const milestone of newMilestones) {
+        try {
+          const celebrationData =
+            await ctx.milestoneService.getMilestoneCelebrationData(
+              ctx.user.id,
+              milestone.type
+            );
+
+          await ctx.reply(celebrationData.message, {
+            parse_mode: "Markdown",
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: "🏆 Lihat Progress",
+                    callback_data: "show_milestones",
+                  },
+                  { text: "📊 Lihat Statistik", callback_data: "show_stats" },
+                ],
+                [{ text: "🏠 Menu Utama", callback_data: "back_to_start" }],
+              ],
+            },
+          });
+
+          // Small delay between milestone messages
+          if (newMilestones.indexOf(milestone) < newMilestones.length - 1) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          }
+        } catch (error) {
+          console.error("❌ Error sending milestone celebration:", error);
+          // Continue with other milestones
+        }
+      }
+    }
+
     console.log(
-      `✅ Reflection processed successfully for user ${ctx.user.telegramId} - Reflection ID: ${reflection.id}`
+      `✅ Reflection processed successfully for user ${
+        ctx.user.telegramId
+      } - Reflection ID: ${reflection.id}${
+        newMilestones && newMilestones.length > 0
+          ? ` - Unlocked milestones: ${newMilestones
+              .map((m) => m.type)
+              .join(", ")}`
+          : ""
+      }`
     );
   } catch (error) {
     console.error("Error processing reflection:", error);
