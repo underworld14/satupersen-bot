@@ -11,34 +11,41 @@ datasource db {
 }
 
 model User {
-  id          String        @id @default(uuid())
-  telegramId  String        @unique
-  username    String?
-  firstName   String?
-  reflections Reflection[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id            String       @id @default(uuid())
+  telegramId    String       @unique
+  username      String?
+  firstName     String?
+  reflections   Reflection[]
+  currentStreak Int          @default(0)
+  longestStreak Int          @default(0)
+  lastActive    DateTime?
+  milestones    Json         @default("{}")
+  habitPrefs    String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
   @@index([telegramId])
   @@index([createdAt])
+  @@index([lastActive])
   @@map("users")
 }
 
 model Reflection {
-  id         String   @id @default(uuid())
-  userId     String
-  date       DateTime // Changed from default(now()) to allow specific date setting
-  input      String
-  aiSummary  String?
-  moodScore  Int? // Score from 1-100 representing user's mood
-  wordCount  Int      @default(0)
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id                      String   @id @default(uuid())
+  userId                  String
+  date                    DateTime // Changed from default(now()) to allow specific date setting
+  input                   String
+  aiSummary               String?
+  moodScore               Int? // Score from 1-100 representing user's mood
+  wordCount               Int      @default(0)
+  habitStackingSuggestion String?
+  streakDay               Int      @default(0)
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 
   @@index([userId, date])
   @@index([userId, createdAt])
   @@index([date])
   @@map("reflections")
 }
-

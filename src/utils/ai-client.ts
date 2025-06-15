@@ -19,7 +19,7 @@ export async function generateContent(prompt: string): Promise<string> {
       contents: prompt,
       config: {
         temperature: 0.7,
-        maxOutputTokens: 300,
+        maxOutputTokens: 1000,
         candidateCount: 1,
       },
     });

@@ -22,6 +22,15 @@ Membantu Anda berkembang 1% setiap hari melalui refleksi diri yang konsisten dan
 📈 /stats \\- Statistik perkembangan
    Melihat statistik refleksi mingguan/bulanan dan motivasi untuk terus berkembang\\.
 
+🔥 /streak \\- Status streak refleksi
+   Lihat streak harian, kalender visual, dan motivasi untuk konsistensi\\.
+
+🎯 /habits \\- Analisis kebiasaan \\& saran
+   Dapatkan saran habit stacking dan analisis pola kebiasaan personal\\.
+
+📊 /progress \\- Progress "1% Better"
+   Lihat kemajuan kumulatif, habit maturity meter, dan timeline perkembangan\\.
+
 🏠 /start \\- Kembali ke menu utama
    Menampilkan halaman utama dengan tombol navigasi\\.
 
@@ -75,6 +84,9 @@ Membantu Anda berkembang 1% setiap hari melalui refleksi diri yang konsisten.
 📝 /reflect - Mulai refleksi harian
 📊 /summary - Ringkasan hari ini  
 📈 /stats - Statistik perkembangan
+🔥 /streak - Status streak refleksi
+🎯 /habits - Analisis kebiasaan & saran
+📊 /progress - Progress "1% Better"
 🏠 /start - Menu utama
 ❓ /help - Panduan ini
 
@@ -118,6 +130,9 @@ Ketik /reflect untuk memulai refleksi harian Anda!`;
           "• /reflect - Mulai refleksi harian\n" +
           "• /summary - Ringkasan hari ini\n" +
           "• /stats - Statistik perkembangan\n" +
+          "• /streak - Status streak refleksi\n" +
+          "• /habits - Analisis kebiasaan & saran\n" +
+          "• /progress - Progress '1% Better'\n" +
           "• /start - Menu utama\n" +
           "• /help - Panduan ini\n\n" +
           "Tips: Jadilah jujur dalam refleksi dan fokus pada pembelajaran!\n\n" +
@@ -138,7 +153,9 @@ Ketik /reflect untuk memulai refleksi harian Anda!`;
       );
     } catch (fallbackError) {
       console.error("All fallbacks failed:", fallbackError);
-      await ctx.reply("Panduan bot: /start /help /reflect /summary /stats");
+      await ctx.reply(
+        "Panduan bot: /start /help /reflect /summary /stats /streak /habits /progress"
+      );
     }
   }
 }
